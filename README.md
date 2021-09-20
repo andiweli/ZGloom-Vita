@@ -16,7 +16,7 @@ A fork of [ZGloom-vita](https://github.com/JetStreamSham/ZGloom-vita) from [JetS
 ## How to play
 
 Gloom was made freely available by its developers [here](https://github.com/earok/GloomAmiga/archive/master.zip).<br>
-For the other official games using the Black Magic "Gloom"-engine like [Gloom 3](http://aminet.net/package/game/shoot/UltimateGloomISO) or [Zombie Massacre](http://aminet.net/package/game/shoot/ZombieMassacreISO) you can load them for free on Aminet. Otherwise you can take the original game files from your game installation.
+For the other official games using the Black Magic "Gloom"-engine like [Gloom 3](http://aminet.net/package/game/shoot/UltimateGloomISO) or [Zombie Massacre](http://aminet.net/package/game/shoot/ZombieMassacreISO) you can load them for free on Aminet. Otherwise you can take the original game files from your game installation. Or just download them [here](https://github.com/andiweli/ZGloom-vita/tree/master/gamefiles) (thank's to Gareth Murfin for the permission).
 
 To play on PS VITA install the .vpk, download the .zip of the game(s) you want to play, extract them somewhere to your harddrive and copy only the folders (depending on the game) to the following locations on vita:
 
