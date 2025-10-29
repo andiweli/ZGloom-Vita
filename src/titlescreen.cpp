@@ -5,7 +5,7 @@ void TitleScreen::Render(SDL_Surface *src, SDL_Surface *dest, Font &font)
 	SDL_BlitSurface(src, nullptr, dest, nullptr);
 	bool flash = (timer / 5) & 1;
 
-	font.PrintMessage("PSVITA PORT BY JETSTREAMSHAM", 245, dest, 1); // added copyright text in footer
+	font.PrintMessage("PORT BY JETSTREAMSHAM AND ANDIWELI", 245, dest, 1); // added copyright text in footer
 
 	if (status == TITLESTATUS_MAIN)
 	{
@@ -47,9 +47,9 @@ void TitleScreen::Render(SDL_Surface *src, SDL_Surface *dest, Font &font)
 		font.PrintMessage("GLOOM AND GLOOM 3 BY BLACK MAGIC", 160, dest, 1); // added copyright for Gloom series
 		font.PrintMessage("ZOMBIE MASSACRE BY ALPHA SOFTWARE", 170, dest, 1); // added copyright for Zombie Massacre
 
-		font.PrintMessage("PSVITA PORT BY JETSTREAMSHAM", 190, dest, 1); // added port
-		font.PrintMessage("BASED ON ZGLOOM BY SWIZPIG", 200, dest, 1); // added reimplementation
-		font.PrintMessage("ADDITIONAL GRAPHICS AND CODE BY ANDIWELI", 210, dest, 1); // added "little helper"
+		font.PrintMessage("BASED ON ZGLOOM BY SWIZPIG", 190, dest, 1); // added original
+		font.PrintMessage("PSVITA PORT BY JETSTREAMSHAM", 200, dest, 1); // added port
+		font.PrintMessage("CHEATMENU AND FIXES BY ANDIWELI", 210, dest, 1); // added "little helper"
 	}
 }
 

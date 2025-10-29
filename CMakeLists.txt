@@ -13,14 +13,15 @@ include("${VITASDK}/share/vita.cmake" REQUIRED)
 
 set(VITA_APP_NAME "ZGloomVita")
 set(VITA_TITLEID  "JETSGLOOM")
-set(VITA_VERSION  "02.11")
+set(VITA_VERSION  "02.20")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu11")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fpermissive")
 
-#include_directories(
+include_directories(
 #  common
-#)
+	include_directories(${VITASDK}/arm-vita-eabi/include/SDL2)
+)
 
 add_executable(${PROJECT_NAME}
 #	src/logger.h
@@ -68,7 +69,12 @@ add_executable(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
   SDL2_mixer
+  modplug
+  opusfile
+  opus
+  ogg
   SDL2
+  vita2d
   mikmod
   mpg123
   FLAC
@@ -79,6 +85,7 @@ target_link_libraries(${PROJECT_NAME}
   SceDisplay_stub
   SceCtrl_stub
   SceAudio_stub
+  SceAudioIn_stub
   SceSysmodule_stub
   SceGxm_stub
   SceCommonDialog_stub
@@ -116,3 +123,25 @@ vita_create_vpk(${PROJECT_NAME}.vpk ${VITA_TITLEID} ${PROJECT_NAME}.self
   FILE sce_sys/livearea/contents/zombiemassacre.png sce_sys/livearea/contents/zombiemassacre.png
   FILE sce_sys/livearea/contents/template.xml sce_sys/livearea/contents/template.xml
 )
+
+# Append these lines to your CMakeLists.txt (or replace flags/targets accordingly)
+# --- Performance flags (VitaSDK, GCC) ---
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -ffast-math -flto -fno-exceptions -fomit-frame-pointer -ftree-vectorize -funsafe-math-optimizations")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -ffast-math -flto -fno-exceptions -fomit-frame-pointer -ftree-vectorize -funsafe-math-optimizations -std=gnu++11")
+
+# Enable NEON if available on toolchain
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mfpu=neon -mfloat-abi=hard")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mfpu=neon -mfloat-abi=hard")
+
+# -----------------------------------------------------------
+# Vita Performance Pack Sources (LensFlare / RendererHooks)
+# -----------------------------------------------------------
+set(ZGLOOM_VITA_ADDON_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/vita/FrameLimiter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/vita/Profiler.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/vita/LensFlare.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/vita/RendererHooks.cpp
+)
+
+# !! Namen exakt wie bei add_executable oben !!
+target_sources(${PROJECT_NAME} PRIVATE ${ZGLOOM_VITA_ADDON_SOURCES})

@@ -15,6 +15,8 @@
 #include <SDL2/SDL_mixer.h>
 
 #include "config.h"
+#include "vita/RendererHooks.h"
+#include "vita/LensFlare.h"
 #include "gloommap.h"
 #include "script.h"
 #include "crmfile.h"
@@ -155,7 +157,11 @@ int main(int argc, char *argv[])
 	memset(buffer, 0, 2048);
 
 	// Check if any params are given
-	sceAppUtilInit(&(SceAppUtilInitParam){}, &(SceAppUtilBootParam){});
+	SceAppUtilInitParam initParam = {};
+	sceClibMemset(&initParam, 0, sizeof(initParam));
+	SceAppUtilBootParam bootParam = {};
+	sceClibMemset(&bootParam, 0, sizeof(bootParam));
+	sceAppUtilInit(&initParam, &bootParam);
 	SceAppUtilAppEventParam eventParam;
 	sceClibMemset(&eventParam, 0, sizeof(SceAppUtilAppEventParam));
 	sceAppUtilReceiveAppEvent(&eventParam);
@@ -262,6 +268,10 @@ int main(int argc, char *argv[])
 		std::cout << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;
 		return 1;
 	}
+
+	// Initialize performance hooks (60 FPS limiter + lens flares)
+	RendererHooks::init(ren, windowwidth, windowheight);
+	RendererHooks::setTargetFps(60);
 
 	SDL_Texture *rendertex = SDL_CreateTexture(ren, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, renderwidth, renderheight);
 	if (rendertex == nullptr)
@@ -378,6 +388,7 @@ int main(int argc, char *argv[])
 	Input::Init();
 	while (notdone)
 	{
+		RendererHooks::beginFrame();
 		sceCtrlPeekBufferPositive(0, &inputData, 1);
 
 		if ((state == STATE_PARSING) || (state == STATE_SPOOLING))
@@ -727,7 +738,7 @@ int main(int argc, char *argv[])
 			SDL_UpdateTexture(rendertex, NULL, render32->pixels, render32->pitch);
 			SDL_RenderClear(ren);
 			SDL_RenderCopy(ren, rendertex, NULL, NULL);
-			SDL_RenderPresent(ren);
+			RendererHooks::endFramePresent();
 		}
 	}
 
