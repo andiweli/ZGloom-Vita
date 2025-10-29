@@ -3,9 +3,10 @@
 A port of [ZGloom](https://github.com/Swizpig/ZGloom) for the PlayStation Vita.<br>
 A fork of [ZGloom-vita](https://github.com/JetStreamSham/ZGloom-vita) from [JetStreamSham](https://github.com/JetStreamSham)
 
-## What's new?
+## What's extra?
 1. added a launcher to the game to have all Gloom-Engine games available
 2. added a cheat menu into the game menu to set invinite health photon weapon at start
+3. performance boost with up to 60 frames per second
 
 ## What is Gloom?
 
@@ -42,7 +43,8 @@ ZGloom can now add in-game music using any module that XMP can play. Put the mod
 4. Compile with `make`.
 
 # TODO
-Change renderer
+- Update or change renderer
+- Fix weapon firing bug (not centered when strafing)
 
 # License
 
