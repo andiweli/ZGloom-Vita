@@ -3,7 +3,8 @@
 #include "monsterlogic.h"
 #include "hud.h"
 #include "config.h"
-#include <psp2/kernel/clib.h> 
+#include <psp2/kernel/clib.h>
+#include <psp2/ctrl.h> 
 
 void GameLogic::Init(ObjectGraphics *ograph)
 {
@@ -740,14 +741,14 @@ bool GameLogic::Update(Camera *cam)
 
 		//wire these up to controller as well at some point
 
-		bool controlfire = Input::GetButton(Config::GetKey(Config::KEY_SHOOT));
-		bool controlup = Input::GetButton(Config::GetKey(Config::KEY_UP));
-		bool controldown = Input::GetButton(Config::GetKey(Config::KEY_DOWN));
-		bool controlleft = Input::GetButton(Config::GetKey(Config::KEY_LEFT));
-		bool controlright = Input::GetButton(Config::GetKey(Config::KEY_RIGHT));
-		bool controlstrafeleft = Input::GetButton(Config::GetKey(Config::KEY_SLEFT));
-		bool controlstraferight = Input::GetButton(Config::GetKey(Config::KEY_SRIGHT));
-		bool controlstrafemod = Input::GetButton(Config::GetKey(Config::KEY_STRAFEMOD));
+		bool controlfire = Input::GetButton(static_cast<SceCtrlButtons>(Config::GetKey(Config::KEY_SHOOT)));
+		bool controlup = Input::GetButton(static_cast<SceCtrlButtons>(Config::GetKey(Config::KEY_UP)));
+		bool controldown = Input::GetButton(static_cast<SceCtrlButtons>(Config::GetKey(Config::KEY_DOWN)));
+		bool controlleft = Input::GetButton(static_cast<SceCtrlButtons>(Config::GetKey(Config::KEY_LEFT)));
+		bool controlright = Input::GetButton(static_cast<SceCtrlButtons>(Config::GetKey(Config::KEY_RIGHT)));
+		bool controlstrafeleft = Input::GetButton(static_cast<SceCtrlButtons>(Config::GetKey(Config::KEY_SLEFT)));
+		bool controlstraferight = Input::GetButton(static_cast<SceCtrlButtons>(Config::GetKey(Config::KEY_SRIGHT)));
+		bool controlstrafemod = Input::GetButton(static_cast<SceCtrlButtons>(Config::GetKey(Config::KEY_STRAFEMOD)));
 
 		Input::Stick rightStick = Input::GetRightStick();
 		Sint32 rotation = (Sint32)rightStick.x - 128;

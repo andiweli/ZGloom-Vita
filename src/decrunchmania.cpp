@@ -1,5 +1,7 @@
 
 #include "decrunchmania.h"
+#include <cstdint>
+#include <cstring>
 
 
 static void writew(void *data, unsigned short w);
@@ -189,7 +191,7 @@ unsigned int GetSize(void *data)
     if(data == 0)
         return 0;
 
-    return readl(data) == 'CrM2' ? readl((unsigned char*)data+6) : 0;
+    return (std::memcmp(reinterpret_cast<const char*>(data), "CrM2", 4) == 0) ? readl((unsigned char*)data + 6) : 0;
 }
 
 /*  returns MinSecDist, headroom needed for some files */
@@ -198,7 +200,7 @@ unsigned int GetSecDist(void *data)
 	if (data == 0)
 		return 0;
 
-	return readl(data) == 'CrM2' ? readw((unsigned char*)data + 4) : 0;
+	return (std::memcmp(reinterpret_cast<const char*>(data), "CrM2", 4) == 0) ? readw((unsigned char*)data + 4) : 0;
 }
 
 
@@ -252,7 +254,7 @@ static int getbits()
     d7 -= d1;
     if(d7t >= (short)d1)
         goto gbnoloop;
-    d7 += (unsigned short)a5;
+    d7 += static_cast<unsigned short>(reinterpret_cast<uintptr_t>(a5));
     d3 = d3l = 0;
     d3 = readw(a2 -= 2);
     d3l = (d3l&0xffff0000) | d3; d3 = d3l <<= d7;
@@ -299,7 +301,7 @@ rtlop:
     if(d5 != 0xffff)
         goto rtlop;
     
-    d5 = (unsigned short)a3;
+    d5 = static_cast<unsigned short>(reinterpret_cast<uintptr_t>(a3));
     d5--;
 
 rtlp2:

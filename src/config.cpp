@@ -17,7 +17,7 @@ namespace Config
 	// set parameter string for launcher selection
 	static std::string selectedGame = "";
 	static GameTitle gameID = GameTitle::GLOOM;
-	static char *gamePaths[5] = {
+	static const char* gamePaths[5] = {
 		"ux0:/data/ZGloom/gloom",
 		"ux0:/data/ZGloom/deluxe",
 		"ux0:/data/ZGloom/gloom3",
@@ -336,8 +336,8 @@ namespace Config
 		configkeys[KEY_SHOOT] = SCE_CTRL_CROSS;
 		configkeys[KEY_UP] = SCE_CTRL_UP;
 		configkeys[KEY_DOWN] = SCE_CTRL_DOWN;
-		configkeys[KEY_LEFT] = SCE_CTRL_LTRIGGER | SCE_CTRL_TRIANGLE;
-		configkeys[KEY_RIGHT] = SCE_CTRL_RTRIGGER | SCE_CTRL_SQUARE;
+		configkeys[KEY_LEFT] = static_cast<SceCtrlButtons>(SCE_CTRL_LTRIGGER | SCE_CTRL_TRIANGLE);
+		configkeys[KEY_RIGHT] = static_cast<SceCtrlButtons>(SCE_CTRL_RTRIGGER | SCE_CTRL_SQUARE);
 		configkeys[KEY_SLEFT] = SCE_CTRL_LEFT;
 		configkeys[KEY_SRIGHT] = SCE_CTRL_RIGHT;
 		configkeys[KEY_STRAFEMOD] = SCE_CTRL_CIRCLE;
@@ -393,7 +393,7 @@ namespace Config
 						{
 							std::string val = line.substr(0, line.find(" "));
 
-							configkeys[i] = std::stoi(val);
+							configkeys[i] = static_cast<SceCtrlButtons>(std::stoi(val));
 
 							if ((i + 1) << KEY_END)
 							{
@@ -485,7 +485,7 @@ namespace Config
 
 	void SetKey(keyenum k, int newval)
 	{
-		configkeys[k] = newval;
+		configkeys[k] = static_cast<SceCtrlButtons>(newval);
 	}
 
 	int GetMouseSens()
