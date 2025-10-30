@@ -5,7 +5,7 @@ A fork of [ZGloom-vita](https://github.com/JetStreamSham/ZGloom-vita) from [JetS
 Now with integrated launcher for all Gloom-Engine games available and integrated cheat-menu!
 
 ## What's new?
-- 30.10.2025: Toolchain-finetuning for smalle .VPK and slightly better performance 
+- 30.10.2025: Toolchain-finetuning for smaller .VPK and slightly better performance 
 - 29.10.2025: Optimized renderer > Performance boost with up to 60 FPS
 
 ## What is Gloom?
