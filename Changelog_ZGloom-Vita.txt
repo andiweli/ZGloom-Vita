@@ -19,3 +19,5 @@ Added filter scanlines (options)
 Added filter filmgrain (options)
 All options are saved now
 
+2.5
+Fixed a bug where, when moving sideways, the muzzle flash didn't come from the weapon but from the side.

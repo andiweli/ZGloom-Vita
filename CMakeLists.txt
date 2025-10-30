@@ -39,7 +39,7 @@ endif()
 
 set(VITA_APP_NAME "ZGloomVita")
 set(VITA_TITLEID  "JETSGLOOM")
-set(VITA_VERSION  "02.40")
+set(VITA_VERSION  "02.50")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu11")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fpermissive")
@@ -165,6 +165,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mfpu=neon -mfloat-abi=hard")
 set(ZGLOOM_VITA_ADDON_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/src/ConfigOverlays.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/MenuAdapters.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/weaponfix.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/vita/VignetteOverlay.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/vita/FilmGrainOverlay.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/vita/ScanlineOverlay.cpp

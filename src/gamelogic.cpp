@@ -3,8 +3,9 @@
 #include "monsterlogic.h"
 #include "hud.h"
 #include "config.h"
-#include <psp2/kernel/clib.h>
-#include <psp2/ctrl.h> 
+#include <cstring>
+#include "weaponfix.h"
+#include <psp2/kernel/clib.h> 
 
 void GameLogic::Init(ObjectGraphics *ograph)
 {
@@ -863,8 +864,13 @@ bool GameLogic::Update(Camera *cam)
 		{
 			//Shoot!
 			if ((playerobj.data.ms.reloadcnt == 0) && (!firedown))
-			{
-				auto wep = playerobj.data.ms.weapon;
+{                // v2.4: neutralize sway + strafe aim during shot (scoped)
+                int savedBounce = playerobj.data.ms.bounce;
+                playerobj.data.ms.bounce = 0;
+                unsigned char savedStrafeBytes[sizeof(camrotstrafe)];
+                std::memcpy(savedStrafeBytes, &camrotstrafe, sizeof(camrotstrafe));
+                std::memset(&camrotstrafe, 0, sizeof(camrotstrafe));
+auto wep = playerobj.data.ms.weapon;
 
 				if (playerobj.data.ms.mega)
 				{
@@ -894,9 +900,13 @@ bool GameLogic::Update(Camera *cam)
 				SoundHandler::Play(wtable[wep].sound);
 				playerobj.data.ms.reloadcnt = playerobj.data.ms.reload;
 				if (!Config::GetAutoFire())
-					firedown = true;
+                // restore swayfiredown = true;
 				playerobj.data.ms.fired = 10;
-			}
+                // v2.4: restore strafe aim + sway
+                std::memcpy(&camrotstrafe, savedStrafeBytes, sizeof(camrotstrafe));
+                playerobj.data.ms.bounce = savedBounce;
+
+}
 		}
 		else
 		{

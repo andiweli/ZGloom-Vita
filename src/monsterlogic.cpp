@@ -797,6 +797,22 @@ void Shoot(MapObject& o, GameLogic* logic, int32_t colltype, int32_t collwith, i
 	temp.SetInt(o.data.ms.firey);
 	newobject.y = o.y + temp;
 	newobject.z = o.z;
+
+
+// ---- VITA MUZZLE FIX (clinical center, sign-aligned): forward-only offset, no lateral ----
+{
+    Quick camq[4];
+    GloomMaths::GetCamRot(o.data.ms.rotquick.GetInt() & 255, camq);
+    Quick fwd; fwd.SetInt(32); // forward distance (tweak if needed)
+    Quick offx = camq[1] * fwd; // forward X
+    Quick offz = camq[3] * fwd; // forward Z
+    if (o.t == 0) { // only the player
+        newobject.x = newobject.x - offx; // x uses negative sign
+        newobject.z = newobject.z + offz; // z uses positive sign
+    }
+}
+// ------------------------------------------------------------------------------------------
+
 	newobject.data.ms.logic = FireLogic;
 	newobject.data.ms.render = 1;
 	newobject.data.ms.hit = NullLogicComp;
