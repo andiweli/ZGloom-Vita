@@ -35,12 +35,28 @@ To play on PS VITA install the .vpk, download the .zip of the game(s) you want t
 
 ZGloom can now add in-game music using any module that XMP can play. Put the mods in the sfxs folder and add "song_blitz.mod" or whatever the module name is to the script. Multiple song_ commands are allowed, allowing per-level music.
 
-## Building on Linux
+## Building on Linux (or [WSL](https://learn.microsoft.com/de-de/windows/wsl/install) on Windows)
 
-1. Install the [VitaSDK](https://vitasdk.org/).
-2. Install the LibXMP vita library [port](https://github.com/JetStreamSham/libxmp). See the [porting libraries](https://vitasdk.org/) section for installtion instructions.
-3. Generate makefile with `cmake CMakeLists.txt`.
-4. Compile with `make`.
+I am using Ubuntu on Windows with VitaSDK.
+
+1. Install packages
+    ```
+    apt-get install make git-core cmake python
+    ``` 
+3. Install the [VitaSDK](https://vitasdk.org/) (see more @ [VitaSDK Installation](https://vitasdk.org/))
+    ```
+    export VITASDK=/usr/local/vitasdk
+    export PATH=$VITASDK/bin:$PATH # add vitasdk tool to $PATH
+    git clone https://github.com/vitasdk/vdpm
+    cd vdpm
+    ./bootstrap-vitasdk.sh
+    ./install-all.sh
+    ```
+4. Install the LibXMP vita library [port](https://github.com/JetStreamSham/libxmp) (see more @ [porting libraries section](https://vitasdk.org/) for installtion instructions)
+6. Generate makefile and build .VPK with
+    ```
+    ./build.sh
+    ```
 
 # TODO
 - Update or change renderer
