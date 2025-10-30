@@ -344,7 +344,7 @@ int main(int argc, char *argv[])
 			std::cout << "music error";
 		}
 
-		if (xmp_start_player(ctx, 22050, 0))
+		if (xmp_start_player(ctx, 44100, 0))
 		{
 			std::cout << "music error";
 		}
@@ -436,7 +436,7 @@ int main(int argc, char *argv[])
 								std::cout << "music error";
 							}
 
-							if (xmp_start_player(ctx, 22050, 0))
+							if (xmp_start_player(ctx, 44100, 0))
 							{
 								std::cout << "music error";
 							}
@@ -461,7 +461,7 @@ int main(int argc, char *argv[])
 							std::cout << "music error";
 						}
 
-						if (xmp_start_player(ctx, 22050, 0))
+						if (xmp_start_player(ctx, 44100, 0))
 						{
 							std::cout << "music error";
 						}
@@ -507,7 +507,7 @@ int main(int argc, char *argv[])
 							std::cout << "music error";
 						}
 
-						if (xmp_start_player(ctx, 22050, 0))
+						if (xmp_start_player(ctx, 44100, 0))
 						{
 							std::cout << "music error";
 						}
@@ -534,7 +534,7 @@ int main(int argc, char *argv[])
 						std::cout << "music error";
 					}
 
-					if (xmp_start_player(ctx, 22050, 0))
+					if (xmp_start_player(ctx, 44100, 0))
 					{
 						std::cout << "music error";
 					}
@@ -629,7 +629,7 @@ int main(int argc, char *argv[])
 							std::cout << "music error";
 						}
 
-						if (xmp_start_player(ctx, 22050, 0))
+						if (xmp_start_player(ctx, 44100, 0))
 						{
 							std::cout << "music error";
 						}

@@ -106,13 +106,16 @@ namespace SoundHandler
 	void Init()
 	{
 
-		if (Mix_OpenAudio(22050, AUDIO_S16LSB, 2, 1024))
+		if (Mix_OpenAudio(44100, AUDIO_S16LSB, 2, 1024))
 		{
 			std::cout << "openaudio error" << Mix_GetError() << std::endl;
 			return;
 		}
 
 		Mix_AllocateChannels(16);
+		int freq=0; Uint16 fmt=0; int chans=0;
+		Mix_QuerySpec(&freq,&fmt,&chans);
+		std::cout << "SDL_mixer: opened " << freq << " Hz, chans=" << chans << std::endl;
 
 		for (auto i = 0; i < SOUND_END; i++)
 		{

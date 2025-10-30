@@ -33,36 +33,36 @@ void MenuScreen::Render(SDL_Surface *src, SDL_Surface *dest, Font &font)
 		DisplayStandardMenu(cheatmenu, flash, scale, dest, font);
 	}
 // ---	
-	else if (status == MENUSTATUS_KEYCONFIG)
-	{
-		switch (selection)
-		{
-		case Config::KEY_UP:
-			font.PrintMessage("PRESS KEY FOR FORWARD", 120 * scale, dest, scale);
-			break;
-		case Config::KEY_DOWN:
-			font.PrintMessage("PRESS KEY FOR BACK", 120 * scale, dest, scale);
-			break;
-		case Config::KEY_LEFT:
-			font.PrintMessage("PRESS KEY FOR ROTATE LEFT", 120 * scale, dest, scale);
-			break;
-		case Config::KEY_RIGHT:
-			font.PrintMessage("PRESS KEY FOR ROTATE RIGHT", 120 * scale, dest, scale);
-			break;
-		case Config::KEY_SLEFT:
-			font.PrintMessage("PRESS KEY FOR STRAFE LEFT", 120 * scale, dest, scale);
-			break;
-		case Config::KEY_SRIGHT:
-			font.PrintMessage("PRESS KEY FOR STRAFE RIGHT", 120 * scale, dest, scale);
-			break;
-		case Config::KEY_STRAFEMOD:
-			font.PrintMessage("PRESS KEY FOR STRAFE MODIFIER", 120 * scale, dest, scale);
-			break;
-		case Config::KEY_SHOOT:
-			font.PrintMessage("PRESS KEY FOR SHOOT", 120 * scale, dest, scale);
-			break;
-		}
-	}
+//	else if (status == MENUSTATUS_KEYCONFIG)
+//	{
+//		switch (selection)
+//		{
+//		case Config::KEY_UP:
+//			font.PrintMessage("PRESS KEY FOR FORWARD", 120 * scale, dest, scale);
+//			break;
+//		case Config::KEY_DOWN:
+//			font.PrintMessage("PRESS KEY FOR BACK", 120 * scale, dest, scale);
+//			break;
+//		case Config::KEY_LEFT:
+//			font.PrintMessage("PRESS KEY FOR ROTATE LEFT", 120 * scale, dest, scale);
+//			break;
+//		case Config::KEY_RIGHT:
+//			font.PrintMessage("PRESS KEY FOR ROTATE RIGHT", 120 * scale, dest, scale);
+//			break;
+//		case Config::KEY_SLEFT:
+//			font.PrintMessage("PRESS KEY FOR STRAFE LEFT", 120 * scale, dest, scale);
+//			break;
+//		case Config::KEY_SRIGHT:
+//			font.PrintMessage("PRESS KEY FOR STRAFE RIGHT", 120 * scale, dest, scale);
+//			break;
+//		case Config::KEY_STRAFEMOD:
+//			font.PrintMessage("PRESS KEY FOR STRAFE MODIFIER", 120 * scale, dest, scale);
+//			break;
+//		case Config::KEY_SHOOT:
+//			font.PrintMessage("PRESS KEY FOR SHOOT", 120 * scale, dest, scale);
+//			break;
+//		}
+//	}
 }
 
 MenuScreen::MenuScreen()
@@ -84,7 +84,7 @@ MenuScreen::MenuScreen()
 
 	controlmenu.push_back(MenuEntry("RETURN", ACTION_SWITCHMENU, MENUSTATUS_MAIN, nullptr, nullptr));
 	controlmenu.push_back(MenuEntry("AUTOFIRE: ", ACTION_BOOL, 0, Config::GetAutoFire, Config::SetAutoFire));
-	controlmenu.push_back(MenuEntry("CONFIGURE KEYS", ACTION_SWITCHMENU, MENUSTATUS_KEYCONFIG, nullptr, nullptr));
+//	controlmenu.push_back(MenuEntry("CONFIGURE KEYS", ACTION_SWITCHMENU, MENUSTATUS_KEYCONFIG, nullptr, nullptr));
 	controlmenu.push_back(MenuEntry("RIGHT STICK SENSITIVITY: ", ACTION_INT, 10, Config::GetMouseSens, Config::SetMouseSens));
 
 	displaymenu.push_back(MenuEntry("RETURN", ACTION_SWITCHMENU, MENUSTATUS_MAIN, nullptr, nullptr));
@@ -103,7 +103,7 @@ MenuScreen::MenuScreen()
 
 void MenuScreen::HandleKeyMenu()
 {
-	int button;
+	int button = 0;
 
 	if (Input::GetButtonDown(SCE_CTRL_UP))
 		button = SCE_CTRL_UP;
@@ -130,7 +130,7 @@ void MenuScreen::HandleKeyMenu()
 
 	Config::SetKey((Config::keyenum)selection, button);
 
-	if (button != NULL)
+	if (button != 0)
 	{
 		selection++;
 	}
