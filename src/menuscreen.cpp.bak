@@ -2,7 +2,6 @@
 #include "menuscreen.h"
 #include "config.h"
 #include "ConfigOverlays.h"
-#include "MenuAdapters.h"
 
 void MenuScreen::Render(SDL_Surface *src, SDL_Surface *dest, Font &font)
 {
@@ -94,14 +93,14 @@ MenuScreen::MenuScreen()
 	displaymenu.push_back(MenuEntry("FULLSCREEN: ", ACTION_BOOL, 0, Config::GetFullscreen, Config::SetFullscreen));
 	displaymenu.push_back(MenuEntry("MULTITHREAD RENDERER: ", ACTION_BOOL, 0, Config::GetMT, Config::SetMT));
 	displaymenu.push_back(MenuEntry("ATMOSPHERIC VIGNETTE: ", ACTION_BOOL, 0, Config::GetVignetteEnabled, Config::SetVignetteEnabled));
-	displaymenu.push_back(MenuEntry("VIGNETTE STRENGTH: ", ACTION_INT, 5, Config::GetVignetteStrength, Config::SetVignetteStrength));
-	displaymenu.push_back(MenuEntry("VIGNETTE RADIUS: ", ACTION_INT, 5, Config::GetVignetteRadius, Config::SetVignetteRadius));
-	displaymenu.push_back(MenuEntry("VIGNETTE SOFTNESS: ", ACTION_INT, 5, Config::GetVignetteSoftness, Config::SetVignetteSoftness));
-	displaymenu.push_back(MenuEntry("VIGNETTE WARMTH: ", ACTION_INT, 5, Config::GetVignetteWarmth, Config::SetVignetteWarmth));
-	displaymenu.push_back(MenuEntry("FILM GRAIN: ", ACTION_BOOL, 0, Config::GetFilmGrain, Config::SetFilmGrain));
-	displaymenu.push_back(MenuEntry("FILM GRAIN INTENSITY: ", ACTION_INT, 5, Config::GetFilmGrainIntensity, Config::SetFilmGrainIntensity));
-	displaymenu.push_back(MenuEntry("SCANLINES: ", ACTION_BOOL, 0, Config::GetScanlines, Config::SetScanlines));
-	displaymenu.push_back(MenuEntry("SCANLINE INTENSITY: ", ACTION_INT, 5, Config::GetScanlineIntensity, Config::SetScanlineIntensity));
+displaymenu.push_back(MenuEntry("VIGNETTE STRENGTH: ", ACTION_INT, 5, Config::GetVignetteStrength, Config::SetVignetteStrength));
+displaymenu.push_back(MenuEntry("VIGNETTE RADIUS: ", ACTION_INT, 5, Config::GetVignetteRadius, Config::SetVignetteRadius));
+displaymenu.push_back(MenuEntry("VIGNETTE SOFTNESS: ", ACTION_INT, 5, Config::GetVignetteSoftness, Config::SetVignetteSoftness));
+displaymenu.push_back(MenuEntry("VIGNETTE WARMTH: ", ACTION_INT, 10, Config::GetVignetteWarmth, Config::SetVignetteWarmth));
+displaymenu.push_back(MenuEntry("FILM GRAIN: ", ACTION_BOOL, 0, Config::GetFilmGrain, Config::SetFilmGrain));
+displaymenu.push_back(MenuEntry("FILM GRAIN INTENSITY: ", ACTION_INT, 5, Config::GetFilmGrainIntensity, Config::SetFilmGrainIntensity));
+displaymenu.push_back(MenuEntry("SCANLINES: ", ACTION_BOOL, 0, Config::GetScanlines, Config::SetScanlines));
+displaymenu.push_back(MenuEntry("SCANLINE INTENSITY: ", ACTION_INT, 5, Config::GetScanlineIntensity, Config::SetScanlineIntensity));
 
 
 // cheatmode	

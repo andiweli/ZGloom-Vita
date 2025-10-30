@@ -9,9 +9,13 @@ More fixes to come!
 2.3
 Toolchain-optimization when compiling
 SDL_mixer set to 44.1 kHz (before 22.05 kHz)
-
-[No release so far]
 libxmp-Player set to 44.1 kHz
-Sound Init/Quit fix soundhandler.cpp
+
+2.4
 All compilation warnings eliminated
-Added athmospheric vignette overlay (options)
+Sound Init/Quit fix soundhandler.cpp
+Added filter atmospheric vignette overlay (options)
+Added filter scanlines (options)
+Added filter filmgrain (options)
+All options are saved now
+
