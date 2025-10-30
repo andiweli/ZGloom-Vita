@@ -167,6 +167,7 @@ set(ZGLOOM_VITA_ADDON_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/vita/Profiler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/vita/LensFlare.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/vita/RendererHooks.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/vita/VignetteOverlay.cpp
 )
 
 # !! Namen exakt wie bei add_executable oben !!

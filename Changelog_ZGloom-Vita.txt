@@ -1,0 +1,17 @@
+Changelog
+ZGloom-Vita
+
+2.2
+Performance Boost - Frames now are around 45-60 FPS instead the previous 15-20 FPS.
+Fixed some bugs and made the gameplay a bit smoother.
+More fixes to come!
+
+2.3
+Toolchain-optimization when compiling
+SDL_mixer set to 44.1 kHz (before 22.05 kHz)
+
+[No release so far]
+libxmp-Player set to 44.1 kHz
+Sound Init/Quit fix soundhandler.cpp
+All compilation warnings eliminated
+Added athmospheric vignette overlay (options)

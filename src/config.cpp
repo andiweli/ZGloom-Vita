@@ -17,7 +17,7 @@ namespace Config
 	// set parameter string for launcher selection
 	static std::string selectedGame = "";
 	static GameTitle gameID = GameTitle::GLOOM;
-	static const char* gamePaths[5] = {
+	static const char *gamePaths[5] = {
 		"ux0:/data/ZGloom/gloom",
 		"ux0:/data/ZGloom/deluxe",
 		"ux0:/data/ZGloom/gloom3",
@@ -45,6 +45,7 @@ namespace Config
 
 	static unsigned char rightStickDeadzone = 20;
 	static unsigned char leftStickDeadzone = 20;
+    static int atmosVignette = 1; // vignette/tint overlay toggle (default ON)
 
 	static int sfxvol;
 	static int musvol;
@@ -506,6 +507,16 @@ namespace Config
 	void SetBlood(int b)
 	{
 		bloodsize = b;
+	}
+
+	int GetVignette()
+	{
+		return atmosVignette ? 1 : 0;
+	}
+
+	void SetVignette(int s)
+	{
+		atmosVignette = (s != 0);
 	}
 
 	int GetMT()
