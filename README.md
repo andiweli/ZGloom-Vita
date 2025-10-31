@@ -77,8 +77,8 @@ I am using Ubuntu on Windows with VitaSDK.
     ```
 
 # TODO
-- Update or change renderer (perhaps vita2d?)
-- check for shaders or mipmapping
+- Update or change renderer (perhaps libvita2d)
+- Check for shaders or mipmapping
 - Save/Load for savestates
 # License
 
