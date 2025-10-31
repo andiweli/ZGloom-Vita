@@ -78,35 +78,42 @@ MenuScreen::MenuScreen()
 	mainmenu.push_back(MenuEntry("SOUND OPTIONS", ACTION_SWITCHMENU, MENUSTATUS_SOUNDOPTIONS, nullptr, nullptr));
 	mainmenu.push_back(MenuEntry("DISPLAY OPTIONS", ACTION_SWITCHMENU, MENUSTATUS_DISPLAYOPTIONS, nullptr, nullptr));
 	mainmenu.push_back(MenuEntry("CHEAT OPTIONS", ACTION_SWITCHMENU, MENUSTATUS_CHEATOPTIONS, nullptr, nullptr));
+	//HALBEZEILE//
 	mainmenu.push_back(MenuEntry("QUIT TO TITLE", ACTION_RETURN, MENURET_QUIT, nullptr, nullptr));
 
 	soundmenu.push_back(MenuEntry("RETURN", ACTION_SWITCHMENU, MENUSTATUS_MAIN, nullptr, nullptr));
-	soundmenu.push_back(MenuEntry("SFX VOLUME: ", ACTION_INT, 10, Config::GetSFXVol, Config::SetSFXVol));
+	soundmenu.push_back(MenuEntry("SOUND-FX VOLUME: ", ACTION_INT, 10, Config::GetSFXVol, Config::SetSFXVol));
 	soundmenu.push_back(MenuEntry("MUSIC VOLUME: ", ACTION_INT, 10, Config::GetMusicVol, Config::SetMusicVol));
 
 	controlmenu.push_back(MenuEntry("RETURN", ACTION_SWITCHMENU, MENUSTATUS_MAIN, nullptr, nullptr));
-	controlmenu.push_back(MenuEntry("AUTOFIRE: ", ACTION_BOOL, 0, Config::GetAutoFire, Config::SetAutoFire));
+	controlmenu.push_back(MenuEntry("RAPID-FIRE: ", ACTION_BOOL, 0, Config::GetAutoFire, Config::SetAutoFire));
 //	controlmenu.push_back(MenuEntry("CONFIGURE KEYS", ACTION_SWITCHMENU, MENUSTATUS_KEYCONFIG, nullptr, nullptr));
 	controlmenu.push_back(MenuEntry("RIGHT STICK SENSITIVITY: ", ACTION_INT, 10, Config::GetMouseSens, Config::SetMouseSens));
 
 	displaymenu.push_back(MenuEntry("RETURN", ACTION_SWITCHMENU, MENUSTATUS_MAIN, nullptr, nullptr));
-	displaymenu.push_back(MenuEntry("BLOOD SIZE: ", ACTION_INT, 5, Config::GetBlood, Config::SetBlood));
-	displaymenu.push_back(MenuEntry("FULLSCREEN: ", ACTION_BOOL, 0, Config::GetFullscreen, Config::SetFullscreen));
-	displaymenu.push_back(MenuEntry("MULTITHREAD RENDERER: ", ACTION_BOOL, 0, Config::GetMT, Config::SetMT));
+
+//	displaymenu.push_back(MenuEntry("MULTITHREAD RENDERER: ", ACTION_BOOL, 0, Config::GetMT, Config::SetMT));
+//	displaymenu.push_back(MenuEntry("FULLSCREEN: ", ACTION_BOOL, 0, Config::GetFullscreen, Config::SetFullscreen));
+	displaymenu.push_back(MenuEntry("BLOOD INTENSITY: ", ACTION_INT, 5, Config::GetBlood, Config::SetBlood));
+	//HALBEZEILE//
+	displaymenu.push_back(MenuEntry("MAX FPS 50: ", ACTION_BOOL, 0, Config::GetMaxFpsBool, Config::SetMaxFpsBool));
+	//HALBEZEILE//
 	displaymenu.push_back(MenuEntry("ATMOSPHERIC VIGNETTE: ", ACTION_BOOL, 0, Config::GetVignetteEnabled, Config::SetVignetteEnabled));
 	displaymenu.push_back(MenuEntry("VIGNETTE STRENGTH: ", ACTION_INT, 5, Config::GetVignetteStrength, Config::SetVignetteStrength));
 	displaymenu.push_back(MenuEntry("VIGNETTE RADIUS: ", ACTION_INT, 5, Config::GetVignetteRadius, Config::SetVignetteRadius));
 	displaymenu.push_back(MenuEntry("VIGNETTE SOFTNESS: ", ACTION_INT, 5, Config::GetVignetteSoftness, Config::SetVignetteSoftness));
 	displaymenu.push_back(MenuEntry("VIGNETTE WARMTH: ", ACTION_INT, 5, Config::GetVignetteWarmth, Config::SetVignetteWarmth));
+	//HALBEZEILE//
 	displaymenu.push_back(MenuEntry("FILM GRAIN: ", ACTION_BOOL, 0, Config::GetFilmGrain, Config::SetFilmGrain));
 	displaymenu.push_back(MenuEntry("FILM GRAIN INTENSITY: ", ACTION_INT, 5, Config::GetFilmGrainIntensity, Config::SetFilmGrainIntensity));
+	//HALBEZEILE//
 	displaymenu.push_back(MenuEntry("SCANLINES: ", ACTION_BOOL, 0, Config::GetScanlines, Config::SetScanlines));
 	displaymenu.push_back(MenuEntry("SCANLINE INTENSITY: ", ACTION_INT, 5, Config::GetScanlineIntensity, Config::SetScanlineIntensity));
 
 
 // cheatmode	
 	cheatmenu.push_back(MenuEntry("RETURN", ACTION_SWITCHMENU, MENUSTATUS_MAIN, nullptr, nullptr));
-	cheatmenu.push_back(MenuEntry("NEARLY INFINITE HEALTH: ", ACTION_BOOL, 0, Config::GetGM, Config::SetGM));
+	cheatmenu.push_back(MenuEntry("INFINITE HEALTH AT START: ", ACTION_BOOL, 0, Config::GetGM, Config::SetGM));
 //	cheatmenu.push_back(MenuEntry("MAX LIVES ARE 99: ", ACTION_BOOL, 0, Config::GetUL, Config::SetUL));
 	cheatmenu.push_back(MenuEntry("PHOTON WEAPON AT START: ", ACTION_BOOL, 0, Config::GetMW, Config::SetMW));
 // ---
@@ -161,14 +168,14 @@ MenuScreen::MenuReturn MenuScreen::HandleStandardMenu(std::vector<MenuEntry> &me
 	{
 		selection--;
 		if (selection == -1)
-			selection = 0;
+			selection = menu.size() - 1;
 	}
 	else if (Input::GetButtonDown(SCE_CTRL_DOWN))
 
 	{
 		selection++;
 		if (selection == menu.size())
-			selection = menu.size() - 1;
+			selection = 0;
 	}
 	else if (Input::GetButtonDown(SCE_CTRL_CROSS))
 	{
@@ -202,6 +209,28 @@ MenuScreen::MenuReturn MenuScreen::HandleStandardMenu(std::vector<MenuEntry> &me
 			break;
 		}
 	}
+	
+else if (Input::GetButtonDown(SCE_CTRL_SQUARE))
+{
+    // Square: decrement INT with wrap-around
+    if (menu[selection].action == ACTION_INT)
+    {
+        int x = menu[selection].getval() - 1;
+        if (x < 0)
+            x = menu[selection].arg - 1;
+        menu[selection].setval(x);
+    }
+}
+else if (Input::GetButtonDown(SCE_CTRL_CIRCLE))
+{
+    // Circle: back one level (to main menu)
+    if (status != MENUSTATUS_MAIN)
+    {
+        status = MENUSTATUS_MAIN;
+        selection = 0;
+    }
+}
+
 	return MENURET_NOTHING;
 }
 
@@ -215,11 +244,11 @@ MenuScreen::MenuReturn MenuScreen::Update()
 		return HandleStandardMenu(mainmenu);
 		break;
 	}
-	case MENUSTATUS_KEYCONFIG:
-	{
-		HandleKeyMenu();
-		break;
-	}
+//	case MENUSTATUS_KEYCONFIG:
+//	{
+//		HandleKeyMenu();
+//		break;
+//	}
 
 	case MENUSTATUS_SOUNDOPTIONS:
 	{
@@ -239,13 +268,11 @@ MenuScreen::MenuReturn MenuScreen::Update()
 		break;
 	}
 
-// cheatmode
 	case MENUSTATUS_CHEATOPTIONS:
 	{
 		HandleStandardMenu(cheatmenu);
 		break;
 	}
-// ---
 
 	default:
 		break;
@@ -261,7 +288,18 @@ void MenuScreen::DisplayStandardMenu(std::vector<MenuEntry> &menu, bool flash, i
 
 	for (size_t i = 0; i < menu.size(); i++)
 	{
-		if (menu[i].action == ACTION_INT)
+		
+		// Inserted: half-line spacing before certain entries (markers: //HALBEZEILE// in menu setup)
+		if (menu[i].name == std::string("QUIT TO TITLE") ||
+			menu[i].name == std::string("MAX FPS 50: ") ||
+			menu[i].name == std::string("ATMOSPHERIC VIGNETTE: ") ||
+			menu[i].name == std::string("FILM GRAIN: ") ||
+		    menu[i].name == std::string("SCANLINES: "))
+		{
+			int yinc = 10 * scale;
+			starty += (yinc / 2);
+		}
+if (menu[i].action == ACTION_INT)
 		{
 			if (flash || (selection != i))
 			{

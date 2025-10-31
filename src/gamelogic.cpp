@@ -59,6 +59,17 @@ void GameLogic::Init(ObjectGraphics *ograph)
 
 	p1lives = 3;
 	p1reload = 5;
+	// Ensure starting weapon cheat applies to the actual player MapObject as well
+	if (Config::GetMW()) {
+		for (auto &o : gmap->GetMapObjects()) {
+			if (o.t == 0) { // player object
+				o.data.ms.weapon = p1weapon;
+				o.data.ms.reload = p1reload;
+				break;
+			}
+		}
+	}
+
 
 	playerhit = false;
 }
@@ -96,6 +107,7 @@ void GameLogic::InitLevel(GloomMap *gmapin, Camera *cam, ObjectGraphics *ograph)
 	sucking = 0;
 	sucker = 0;
 	std::fill(animframe, animframe + 160, 0);
+	mwApplied = false;
 
 	for (auto e = 0; e < 25; e++)
 	{
@@ -898,7 +910,12 @@ auto wep = playerobj.data.ms.weapon;
 					Shoot(playerobj, this, (playerobj.data.ms.collwith & 3) ^ 3, 0, wtable[wep].hitpoint, wtable[wep].damage, wtable[wep].speed, wtable[wep].shape, wtable[wep].spark);
 				}
 				SoundHandler::Play(wtable[wep].sound);
+				if (Config::GetAutoFire()) {
+				playerobj.data.ms.reloadcnt = playerobj.data.ms.reload * 2; // Rapidfire 50% slower (half the speed)
+			} else {
 				playerobj.data.ms.reloadcnt = playerobj.data.ms.reload;
+				playerobj.data.ms.fired = 10; // keep single-shot gate
+			}
 				if (!Config::GetAutoFire())
                 // restore swayfiredown = true;
 				playerobj.data.ms.fired = 10;
@@ -1070,6 +1087,13 @@ auto wep = playerobj.data.ms.weapon;
 	//made a bit of a horlicks of this.
 	//I'm not confident about passing pointers to list members around, is that safe? I moved the kill pass to the end, so it should be OK, but erred on the side of safely
 	auto playerobjupdated = GetPlayerObj();
+	// Enforce 'max weapon at start' exactly once after player MapObject exists
+	if (!mwApplied && Config::GetMW()) {
+		playerobjupdated.data.ms.weapon = p1weapon;
+		playerobjupdated.data.ms.reload = p1reload;
+		mwApplied = true;
+	}
+
 
 	playerobj.data.ms.hitpoints = playerobjupdated.data.ms.hitpoints;
 	playerobj.data.ms.weapon = playerobjupdated.data.ms.weapon;

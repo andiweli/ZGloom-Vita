@@ -84,4 +84,5 @@ class GameLogic
 		uint64_t sucking;
 		uint64_t sucker;
 		uint8_t suckangle;
+		bool mwApplied; // ensure photon-at-start cheat applied once
 };

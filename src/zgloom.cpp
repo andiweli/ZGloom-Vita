@@ -271,7 +271,7 @@ int main(int argc, char *argv[])
 
 	// Initialize performance hooks (60 FPS limiter + lens flares)
 	RendererHooks::init(ren, windowwidth, windowheight);
-	RendererHooks::setTargetFps(60);
+	RendererHooks::setTargetFps(Config::GetMaxFps());
 
 	SDL_Texture *rendertex = SDL_CreateTexture(ren, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, renderwidth, renderheight);
 	if (rendertex == nullptr)

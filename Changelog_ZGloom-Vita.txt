@@ -21,3 +21,13 @@ All options are saved now
 
 2.5
 Fixed a bug where, when moving sideways, the muzzle flash didn't come from the weapon but from the side.
+
+2.6
+Render Optimizing
+Optimized Firerate
+New FPS 50 / 30 Option (both at stable framerate)
+Cheat mode "Photon weapon at start" now more robust
+Present path centralized via RendererHooks::beginFrame() / endFramePresent() (no duplicate present elements outside the hooks)
+Streaming texture bridge (Stub) prepared (renderer_sdlbridge.*)
+Menunavigation now loops with DPAD, also added Circle=go back, Square=Value lower, Cross=Value up
+Menu items and description optimized

@@ -118,3 +118,22 @@ void setTargetFps(int fps) {
 }
 
 } // namespace RendererHooks
+
+void setVignetteLevel(int lvl){
+    if (lvl < 0) lvl = 0; if (lvl > 4) lvl = 4;
+    Config::SetVignetteEnabled(lvl > 0 ? 1 : 0);
+    Config::SetVignetteStrength(lvl);
+    // keep radius/softness proportional if not configured elsewhere
+    Config::SetVignetteRadius(lvl);
+    Config::SetVignetteSoftness(lvl);
+}
+void setScanlineLevel(int lvl){
+    if (lvl < 0) lvl = 0; if (lvl > 4) lvl = 4;
+    Config::SetScanlines(lvl > 0 ? 1 : 0);
+    Config::SetScanlineIntensity(lvl);
+}
+void setFilmGrainLevel(int lvl){
+    if (lvl < 0) lvl = 0; if (lvl > 4) lvl = 4;
+    Config::SetFilmGrain(lvl > 0 ? 1 : 0);
+    Config::SetFilmGrainIntensity(lvl);
+}

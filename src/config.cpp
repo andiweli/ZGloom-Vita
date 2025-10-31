@@ -1,6 +1,7 @@
 #include "config.h"
 #include "objectgraphics.h"
 #include "soundhandler.h"
+#include "vita/RendererHooks.h"
 
 #include <psp2/ctrl.h>
 #include <string>
@@ -13,6 +14,7 @@
 namespace Config
 {
 	static bool zombiemassacremode = false;
+	static int maxfps = 50; // 50 or 30
 
 	// set parameter string for launcher selection
 	static std::string selectedGame = "";
@@ -450,7 +452,13 @@ namespace Config
 					}
 
 // cheatmode
-					if (command == "godmode")
+					
+if (command == "maxfps")
+{
+    int v = std::stoi(line);
+    maxfps = (v <= 30) ? 30 : 50;
+}
+if (command == "godmode")
 					{
 						godmode = std::stoi(line) != 0;
 					}
@@ -599,6 +607,32 @@ namespace Config
 		}
 	}
 
+int GetMaxFps()
+{
+    return maxfps;
+}
+
+void SetMaxFps(int fps)
+{
+    int newv = (fps <= 30) ? 30 : 50; // snap
+    if (newv != maxfps) {
+        maxfps = newv;
+        RendererHooks::setTargetFps(maxfps);
+    }
+}
+
+int GetMaxFpsBool()
+{
+    return (maxfps >= 50) ? 1 : 0;
+}
+
+void SetMaxFpsBool(int on)
+{
+    SetMaxFps(on ? 50 : 30);
+}
+
+
+
 	void Save()
 	{
 
@@ -654,7 +688,10 @@ namespace Config
 			file << "\n;Multithreaded renderer (somewhat experimental)\n;Has to be enabled for PS Vita.\n";
 			file << "multithread " << (multithread ? 1 : 0) << "\n";
 
-			file << "\n;Rapidfire?\n";
+			
+file << "\n;Max FPS cap (30 or 50)\n";
+file << "maxfps " << maxfps << "\n";
+file << "\n;Rapidfire?\n";
 			file << "autofire " << (autofire ? 1 : 0) << "\n";
 
 			// cheatmode

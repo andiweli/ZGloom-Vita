@@ -15,4 +15,9 @@ namespace RendererHooks {
     void beginFrame();
     void endFramePresent();
     void setTargetFps(int fps);
+    // Convenience mappers for menu sliders (0..4)
+    void setVignetteLevel(int level01to4);
+    void setScanlineLevel(int level01to4);
+    void setFilmGrainLevel(int level01to4);
 }
+

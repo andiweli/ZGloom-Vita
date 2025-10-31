@@ -39,7 +39,7 @@ endif()
 
 set(VITA_APP_NAME "ZGloomVita")
 set(VITA_TITLEID  "JETSGLOOM")
-set(VITA_VERSION  "02.50")
+set(VITA_VERSION  "02.60")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu11")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fpermissive")
@@ -178,3 +178,6 @@ set(ZGLOOM_VITA_ADDON_SOURCES
 
 # !! Namen exakt wie bei add_executable oben !!
 target_sources(${PROJECT_NAME} PRIVATE ${ZGLOOM_VITA_ADDON_SOURCES})
+
+# Added by patch: streaming-texture bridge
+set(EXTRA_VITA_SRC ${EXTRA_VITA_SRC} src/vita/renderer_sdlbridge.cpp)

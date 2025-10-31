@@ -10,11 +10,13 @@ void TitleScreen::Render(SDL_Surface *src, SDL_Surface *dest, Font &font)
 	if (status == TITLESTATUS_MAIN)
 	{
 		if (flash || (selection != MAINENTRY_PLAY))
-			font.PrintMessage("PLAY", 150, dest, 1);
+			font.PrintMessage("START NEW GAME", 150, dest, 1);
 		if (flash || (selection != MAINENTRY_SELECT))
-			font.PrintMessage("LEVEL SELECT", 170, dest, 1);
-		if (flash || (selection != MAINENTRY_ABOUT))
-			font.PrintMessage("ABOUT", 190, dest, 1);
+			font.PrintMessage("SELECT LEVEL", 165, dest, 1);
+		if (flash || (selection != MAINENTRY_GAME))
+			font.PrintMessage("ABOUT THE GAME", 180, dest, 1);
+		if (flash || (selection != MAINENTRY_PORT))
+			font.PrintMessage("ABOUT THE PSVITA PORT", 195, dest, 1);
 		if (flash || (selection != MAINENTRY_QUIT))
 			font.PrintMessage("EXIT", 210, dest, 1);
 	}
@@ -29,27 +31,32 @@ void TitleScreen::Render(SDL_Surface *src, SDL_Surface *dest, Font &font)
 			}
 		}
 	}
-	else
+	else if (status == TITLESTATUS_PORT)
 	{
-		font.PrintMessage("GLOOM", 30, dest, 1);
-		font.PrintMessage("BLACK MAGIC GAME ENGINE", 40, dest, 1); // added "ENGINE" for other ZGloom games
+		font.PrintMessage("PSVITA PORT", 90, dest, 1);
+		font.PrintMessage("BY JETSTREAMSHAM", 100, dest, 1);
 
-		font.PrintMessage("PROGRAMMED BY MARK SIBLY", 60, dest, 1);
-		font.PrintMessage("GRAPHICS BY THE BUTLER BROTHERS", 70, dest, 1);
-		font.PrintMessage("MUSIC BY KEV STANNARD", 80, dest, 1);
-		font.PrintMessage("AUDIO BY BLACK MAGIC", 90, dest, 1);
-		font.PrintMessage("PRODUCED AND DESIGNED BY BLACK MAGIC", 100, dest, 1);
-		font.PrintMessage("GAME CODED IN DEVPAC2", 110, dest, 1);
-		font.PrintMessage("UTILITIES CODED IN BLITZ BASIC 2", 120, dest, 1);
-		font.PrintMessage("RENDERED IN DPAINT3 AND DPAINT4", 130, dest, 1);
-		font.PrintMessage("DECRUNCHING CODE BY THOMAS SCHWARZ", 140, dest, 1);
+		font.PrintMessage("ADDITIONAL PROGRAMMING", 115, dest, 1);
+		font.PrintMessage("LAUNCHER CHEATMENU AND OPTIMIZING", 125, dest, 1);
+		font.PrintMessage("BY ANDIWELI", 135, dest, 1);
+
+		font.PrintMessage("BASED ON ZGLOOM BY SWIZPIG", 155, dest, 1);
+	}
+	else if (status == TITLESTATUS_GAME)
+	{
+		font.PrintMessage("GLOOM", 60, dest, 1);
+		font.PrintMessage("BLACK MAGIC GAME ENGINE", 70, dest, 1);
+
+		font.PrintMessage("PROGRAMMED BY MARK SIBLY", 85, dest, 1);
+		font.PrintMessage("GRAPHICS BY THE BUTLER BROTHERS", 95, dest, 1);
+		font.PrintMessage("MUSIC BY KEV STANNARD", 105, dest, 1);
+		font.PrintMessage("AUDIO BY BLACK MAGIC", 115, dest, 1);
+		font.PrintMessage("PRODUCED AND DESIGNED BY BLACK MAGIC", 125, dest, 1);
+
+		font.PrintMessage("CODED IN DEVPAC2 AND BLITZBASIC 2", 140, dest, 1);
 		
 		font.PrintMessage("GLOOM AND GLOOM 3 BY BLACK MAGIC", 160, dest, 1); // added copyright for Gloom series
 		font.PrintMessage("ZOMBIE MASSACRE BY ALPHA SOFTWARE", 170, dest, 1); // added copyright for Zombie Massacre
-
-		font.PrintMessage("BASED ON ZGLOOM BY SWIZPIG", 190, dest, 1); // added original
-		font.PrintMessage("PSVITA PORT BY JETSTREAMSHAM", 200, dest, 1); // added port
-		font.PrintMessage("CHEATMENU AND FIXES BY ANDIWELI", 210, dest, 1); // added "little helper"
 	}
 }
 
@@ -70,14 +77,14 @@ TitleScreen::TitleReturn TitleScreen::Update(int &levelout)
 		{
 			selection++;
 			if (selection == MAINENTRY_END)
-				selection = MAINENTRY_END - 1;
+				selection = 0;
 		}
 
 		if (Input::GetButtonDown(SCE_CTRL_UP))
 		{
 			selection--;
 			if (selection == -1)
-				selection = 0;
+				selection = MAINENTRY_END - 1;
 		}
 
 		if (Input::GetButtonDown(SCE_CTRL_CROSS))
@@ -86,9 +93,11 @@ TitleScreen::TitleReturn TitleScreen::Update(int &levelout)
 				return TITLERET_PLAY;
 			if (selection == MAINENTRY_QUIT)
 				return TITLERET_QUIT;
-			if (selection == MAINENTRY_ABOUT)
-				status = TITLESTATUS_ABOUT;
-			if (selection == MAINENTRY_SELECT)
+			if (selection == MAINENTRY_GAME)
+				status = TITLESTATUS_GAME;
+			if (selection == MAINENTRY_PORT)
+				status = TITLESTATUS_PORT;
+				if (selection == MAINENTRY_SELECT)
 			{
 				selection = 0;
 				status = TITLESTATUS_SELECT;
@@ -98,18 +107,26 @@ TitleScreen::TitleReturn TitleScreen::Update(int &levelout)
 	else if (status == TITLESTATUS_SELECT)
 	{
 
+// O (CIRCLE): back to MAIN from Level Select
+if (Input::GetButtonDown(SCE_CTRL_CIRCLE))
+{
+	status = TITLESTATUS_MAIN;
+	selection = 0;
+}
+
+
 		if (Input::GetButtonDown(SCE_CTRL_DOWN))
 		{
 			selection++;
 			if (selection == levelnames.size())
-				selection = levelnames.size() - 1;
+				selection = 0;
 		}
 
 		if (Input::GetButtonDown(SCE_CTRL_UP))
 		{
 			selection--;
 			if (selection == -1)
-				selection = 0;
+				selection = levelnames.size() - 1;
 		}
 
 		if (Input::GetButtonDown(SCE_CTRL_CROSS))
@@ -122,6 +139,10 @@ TitleScreen::TitleReturn TitleScreen::Update(int &levelout)
 	}
 	else
 	{
+		// O (CIRCLE): back to MAIN from About
+		if (Input::GetButtonDown(SCE_CTRL_CIRCLE))
+			status = TITLESTATUS_MAIN;
+		else 
 		if (Input::GetButtonDown(SCE_CTRL_CROSS))
 			status = TITLESTATUS_MAIN;
 	}

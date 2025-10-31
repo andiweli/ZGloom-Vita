@@ -96,5 +96,11 @@ namespace Config
 	void RegisterWin(SDL_Window* _win);
 
 	void Init();
-	void Save();
+	
+	// frame limiter
+	int GetMaxFps();
+	void SetMaxFps(int fps);
+	int GetMaxFpsBool(); // 1->50, 0->30
+	void SetMaxFpsBool(int on);
+void Save();
 };
