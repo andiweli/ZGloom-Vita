@@ -5,7 +5,7 @@ A fork of [ZGloom-vita](https://github.com/JetStreamSham/ZGloom-vita) from [JetS
 Now with integrated launcher for all Gloom-Engine games available and integrated cheat-menu!
 
 ## What's new?
-    - 30.10.2025: Toolchain-finetuning for smaller .VPK and slightly better performance 
+  - 30.10.2025: Toolchain-finetuning for smaller .VPK and slightly better performance 
     SDL_mixer set to 44.1 kHz (before 22.05 kHz)
     libxmp-Player set to 44.1 kHz
     All compilation warnings eliminated
@@ -15,7 +15,7 @@ Now with integrated launcher for all Gloom-Engine games available and integrated
     Added filter filmgrain (options)
     All options are saved now
     Fixed a bug where, when moving sideways, the muzzle flash didn't come from the weapon but from the side.
-    - 29.10.2025: Optimized renderer > Performance boost with up to 60 FPS
+  - 29.10.2025: Optimized renderer > Performance boost with up to 60 FPS
 
 ## What is Gloom?
 
