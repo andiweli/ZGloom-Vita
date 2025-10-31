@@ -5,6 +5,15 @@ A fork of [ZGloom-vita](https://github.com/JetStreamSham/ZGloom-vita) from [JetS
 Now with integrated launcher for all Gloom-Engine games available and integrated cheat-menu!
 
 ## What's new?
+  - 31.10.2025:
+    1. Render Optimizing
+    2. Optimized Firerate
+    3. New FPS 50 / 30 Option (both at stable framerate)
+    4. Cheat mode "Photon weapon at start" now more robust
+    5. Present path centralized via RendererHooks::beginFrame() / endFramePresent() (no duplicate present elements outside the hooks)
+    6. Streaming texture bridge (Stub) prepared (renderer_sdlbridge.*)
+    7. Menunavigation now loops with DPAD, also added Circle=go back, Square=Value lower, Cross=Value up
+    8. Menu items and description optimized
   - 30.10.2025:
     1. Toolchain-finetuning for smaller .VPK and slightly better performance 
     2. SDL_mixer and libxmp-Player set to 44kHz (before 22kHz)
