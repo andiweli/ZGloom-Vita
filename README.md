@@ -23,6 +23,8 @@ ZGloom-Vita now has:
 
 [Gloom](https://en.wikipedia.org/wiki/Gloom_(video_game)) was a 1995 Doom-clone from Black Magic Software for Commodore Amiga. It had [very messy and meaty graphics](https://www.lemonamiga.com/games/details.php?id=1781) and needed a very powerful Amiga computer back then (A1200 @ 030 was far too low). It had several official successors like Gloom Deluxe/Ultimate Gloom (a graphical enhanced Gloom), Gloom 3, Zombie Massacre and even some full-game conversion of 90's Amiga games.
 
+<img width="2040" height="1805" alt="gloom-mockup" src="https://github.com/user-attachments/assets/98efe43e-9a7a-4fc7-87bf-7463df071cb5" />
+
 # Instructions
 
 ## How to play
@@ -36,11 +38,6 @@ To play on PS VITA install the .vpk, download the .zip of the game(s) you want t
 > ux0:/data/zgloom/deluxe <br>
 > ux0:/data/zgloom/gloom3 <br>
 > ux0:/data/zgloom/massacre
-
-![Preview of Livearea](https://github.com/andiweli/ZGloom-vita/blob/master/images/gloom-livearea.png)
-
-### Some screenshots from the game Gloom Deluxe itself
-![Preview of the game](https://github.com/andiweli/ZGloom-vita/blob/master/images/gloom-mockup.png)
 
 ## In-game music
 
