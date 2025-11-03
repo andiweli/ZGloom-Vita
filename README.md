@@ -11,7 +11,7 @@ ZGloom-Vita now has:
 - Blood is now covered by walls if the enemy is beside a walls
 - Fixed a bug where, when moving sideways, the muzzle flash didn't come from the weapon but from the side.
 - Menunavigation now loops with DPAD, also added Circle=go back, Square=Value lower, Cross=Value up
-- Toolchain-finetuning for smaller .VPK and slightly better performance 
+- Toolchain-finetuning for up to 4% smaller .VPK and slightly better performance 
 - Atmospheric Vignette/ Film-grain/ Scanlines overlay (options)
 - Unified config.txt with new default-values for all settings
 - SDL_mixer and libxmp-Player set to 44kHz (before 22kHz)
