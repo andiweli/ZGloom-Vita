@@ -7,12 +7,12 @@ Now with integrated launcher for all Gloom-Engine games available and integrated
 ## What's new?
 ZGloom-Vita now has:
 - Optimized and fixed renderer
-- FPS 50 / 30 Option (both at stable framerate)
-- Blood is now covered by walls if the enemy is beside a walls
+- FPS 50 / 30 Option (both at stable framerates)
+- Blood is now covered by walls if the enemy is beside or behind a wall
 - Fixed a bug where, when moving sideways, the muzzle flash didn't come from the weapon but from the side.
 - Menunavigation now loops with DPAD, also added Circle=go back, Square=Value lower, Cross=Value up
 - Toolchain-finetuning for up to 4% smaller .VPK and slightly better performance 
-- Atmospheric Vignette/ Film-grain/ Scanlines overlay (options)
+- Atmospheric Vignette/ Film-grain/ Scanlines overlay (new options)
 - Unified config.txt with new default-values for all settings
 - SDL_mixer and libxmp-Player set to 44kHz (before 22kHz)
 - Menu items and description optimized
