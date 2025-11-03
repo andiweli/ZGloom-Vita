@@ -1,7 +1,7 @@
 # ZGloom-Vita
 
 A port of [ZGloom](https://github.com/Swizpig/ZGloom) for the PlayStation Vita.<br>
-A fork of [ZGloom-vita](https://github.com/JetStreamSham/ZGloom-vita) from [JetStreamSham](https://github.com/JetStreamSham)
+A fork of [ZGloom-Vita](https://github.com/JetStreamSham/ZGloom-vita) from [JetStreamSham](https://github.com/JetStreamSham)
 Now with integrated launcher for all Gloom-Engine games available and integrated cheat-menu!
 
 ## What's new?
