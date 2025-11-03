@@ -16,7 +16,6 @@
 
 #include "config.h"
 #include "vita/RendererHooks.h"
-#include "vita/LensFlare.h"
 #include "gloommap.h"
 #include "script.h"
 #include "crmfile.h"

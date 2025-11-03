@@ -1,23 +1,39 @@
 #pragma once
 #include <SDL2/SDL.h>
-#include "FrameLimiter.h"
-#include "LensFlare.h"
 
-// Drop-in hooks to standardize frame flow on Vita.
-// 1) Call RendererHooks::init(renderer, width, height) after creating your SDL_Renderer
-// 2) At the start of each frame, call RendererHooks::beginFrame()
-// 3) Draw your scene as usual onto SDL_Renderer
-// 4) Before Present, submit any lens flares via LensFlareSystem::addLightScreenSpace(...)
-// 5) Call RendererHooks::endFramePresent() which renders flares + vsync/limit to 60 fps
+// Queue a lens flare using RENDER-SPACE coords (x,y in offscreen)
+// NOTE: Lens flare removed; API kept as no-op for compatibility.
+void EnqueueLensFlareScreen(int x, int y, float intensity, float scale);
+
 namespace RendererHooks {
-    bool init(SDL_Renderer* renderer, int screenW, int screenH);
-    void shutdown();
-    void beginFrame();
-    void endFramePresent();
-    void setTargetFps(int fps);
-    // Convenience mappers for menu sliders (0..4)
-    void setVignetteLevel(int level01to4);
-    void setScanlineLevel(int level01to4);
-    void setFilmGrainLevel(int level01to4);
-}
 
+bool init(SDL_Renderer* renderer, int screenW, int screenH);
+void shutdown();
+
+// Inform hooks about offscreen render size (renderwidth, renderheight)
+void setRenderSize(int w, int h);
+
+// Optional: FPS limit control
+void setTargetFps(int fps);
+
+// Camera motion (screen-space deltas per second) → parallax dust
+void setCameraMotion(float dx, float dy, float yawRate);
+
+// Per-frame hooks
+void beginFrame();
+void endFramePresent();
+
+// Menu-driven helpers (0..5)
+void setVignetteLevel(int lvl);
+void setScanlineLevel(int lvl);
+void setFilmGrainLevel(int lvl);
+
+// NEW: notify that the 3D world (objects) was drawn in this frame.
+// Call once per frame from renderer.cpp (e.g., within DrawObjects).
+void markWorldFrame();
+
+    // Particle Dust toggle (0 = off, 1 = on)
+    int  GetParticleDustEnabled();
+    void SetParticleDustEnabled(int onOff);
+
+} // namespace RendererHooks

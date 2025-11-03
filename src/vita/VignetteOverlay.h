@@ -16,20 +16,24 @@ public:
 
     void destroy();
 
-    // Draw (rebuilds if params changed)
+    // Enable/disable drawing
+    void setEnabled(bool on);
+    bool isEnabled() const;
+
+    // Change parameters (rebuilds the half-res texture on change)
+    void setStrength(float s);
+    void setRadius(float r);
+    void setSoftness(float s);
+    void setTint(Uint8 r, Uint8 g, Uint8 b);
+
+    // NEW: control whether the vignette darkens the center (classic "spotlight")
+    // or the edges (classic photo-style vignette). Default = center-darker to
+    // preserve legacy behaviour; set true to darken the edges.
+    void setEdgesDark(bool on);
+    bool getEdgesDark() const;
+
+    // (Re)render the overlay
     void render(SDL_Renderer* renderer);
-
-    // Enable/disable
-    void setEnabled(bool e) { enabled = e; }
-    bool isEnabled() const { return enabled; }
-
-    // ---- Live tuning (mark dirty ONLY on change) ----
-    void setStrength(float v){ if (v != m_strength){ m_strength = v; dirty = true; } }
-    void setRadius  (float v){ if (v != m_radius  ){ m_radius   = v; dirty = true; } }
-    void setSoftness(float v){ if (v != m_softness){ m_softness = v; dirty = true; } }
-    void setTint(Uint8 r, Uint8 g, Uint8 b){
-        if (r!=m_tintR || g!=m_tintG || b!=m_tintB){ m_tintR=r; m_tintG=g; m_tintB=b; dirty = true; }
-    }
 
 private:
     SDL_Texture* tex = nullptr;
@@ -39,6 +43,7 @@ private:
     float m_radius   = 0.65f;
     float m_softness = 0.35f;
     Uint8 m_tintR = 255, m_tintG = 240, m_tintB = 230;
+    bool m_edgesDark = false;     // default keeps previous "center darker" look
     bool enabled = true;
     bool dirty = true;
 

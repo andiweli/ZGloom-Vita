@@ -36,10 +36,9 @@ if(VITA_PERF_TWEAKS)
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--gc-sections -Wl,--as-needed")
 endif()
 
-
 set(VITA_APP_NAME "ZGloomVita")
 set(VITA_TITLEID  "JETSGLOOM")
-set(VITA_VERSION  "02.60")
+set(VITA_VERSION  "03.00")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu11")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fpermissive")
@@ -165,13 +164,11 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mfpu=neon -mfloat-abi=hard")
 set(ZGLOOM_VITA_ADDON_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/src/ConfigOverlays.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/MenuAdapters.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/src/weaponfix.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/vita/VignetteOverlay.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/vita/FilmGrainOverlay.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/vita/ScanlineOverlay.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/vita/FrameLimiter.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/vita/Profiler.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/vita/LensFlare.cpp
+    
     ${CMAKE_CURRENT_SOURCE_DIR}/src/vita/RendererHooks.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/vita/VignetteOverlay.cpp
 )
@@ -180,4 +177,3 @@ set(ZGLOOM_VITA_ADDON_SOURCES
 target_sources(${PROJECT_NAME} PRIVATE ${ZGLOOM_VITA_ADDON_SOURCES})
 
 # Added by patch: streaming-texture bridge
-set(EXTRA_VITA_SRC ${EXTRA_VITA_SRC} src/vita/renderer_sdlbridge.cpp)

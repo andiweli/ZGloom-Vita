@@ -13,13 +13,13 @@ bool VignetteOverlay::init(SDL_Renderer* renderer, int w, int h,
 {
     destroy();
     screenW = w; screenH = h;
-    // half resolution for speed
-    texW = std::max(1, w / 2);
-    texH = std::max(1, h / 2);
+    texW = std::max(8, w / 2);
+    texH = std::max(8, h / 2);
     m_strength = clamp01(strength);
     m_radius   = clamp01(radius);
     m_softness = clamp01(softness);
     m_tintR = tintR; m_tintG = tintG; m_tintB = tintB;
+    enabled = true;
     dirty = true;
     return buildTexture(renderer);
 }
@@ -57,17 +57,15 @@ bool VignetteOverlay::buildTexture(SDL_Renderer* renderer)
             const float dy = y - cy;
             const float r  = std::sqrt(dx*dx + dy*dy);
 
-            float t = (r - inner) * invSoft;    // <0 inside inner radius
+            float t = (r - inner) * invSoft;
             t = clamp01(t);
-            t = t * t * (3.f - 2.f * t);        // smoothstep
+            t = t * t * (3.f - 2.f * t); // smoothstep
 
-            const float f = clamp01(1.f - m_strength * t);
+            // Soft, linear scaling: center ~ 1.0, edges darken by up to ~0.45 at level 4.
+            float f = clamp01(m_strength * t);
+            const Uint8 grey = (Uint8)(255.0f * (1.0f - f) + 0.5f);
 
-            const Uint8 R = static_cast<Uint8>((m_tintR * f) + (255 - 255 * f));
-            const Uint8 G = static_cast<Uint8>((m_tintG * f) + (255 - 255 * f));
-            const Uint8 B = static_cast<Uint8>((m_tintB * f) + (255 - 255 * f));
-
-            row[x] = (255u << 24) | (Uint32(B) << 16) | (Uint32(G) << 8) | Uint32(R);
+            row[x] = (255u << 24) | (Uint32(grey) << 16) | (Uint32(grey) << 8) | Uint32(grey);
         }
     }
 
@@ -83,5 +81,16 @@ void VignetteOverlay::render(SDL_Renderer* renderer)
         if (!buildTexture(renderer)) return;
     }
     SDL_Rect dst{0,0,screenW,screenH};
+    SDL_SetTextureColorMod(tex, m_tintR, m_tintG, m_tintB);
     SDL_RenderCopy(renderer, tex, nullptr, &dst);
+}
+
+void VignetteOverlay::setEnabled(bool on){ if (enabled != on){ enabled = on; } }
+bool VignetteOverlay::isEnabled() const { return enabled; }
+
+void VignetteOverlay::setStrength(float s){ s = clamp01(s); if (m_strength != s){ m_strength = s; dirty = true; } }
+void VignetteOverlay::setRadius(float r){ r = clamp01(r); if (m_radius   != r){ m_radius   = r; dirty = true; } }
+void VignetteOverlay::setSoftness(float s){ s = clamp01(s); if (m_softness != s){ m_softness = s; dirty = true; } }
+void VignetteOverlay::setTint(Uint8 r, Uint8 g, Uint8 b){
+    if (m_tintR!=r || m_tintG!=g || m_tintB!=b){ m_tintR=r; m_tintG=g; m_tintB=b; /* no rebuild needed for color mod */ }
 }

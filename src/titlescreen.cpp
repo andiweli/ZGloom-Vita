@@ -1,4 +1,13 @@
 #include "titlescreen.h"
+#include <string>
+
+// Ellipsize helper: kürzt Strings auf maxLen Zeichen und hängt "..." an
+// (nur für die Anzeige; die originalen levelnames bleiben unverändert)
+static std::string Ellipsize(const std::string& s, size_t maxLen = 38) {
+    if (s.size() <= maxLen) return s;
+    if (maxLen <= 3) return s.substr(0, maxLen);
+    return s.substr(0, maxLen - 3) + "...";
+}
 
 void TitleScreen::Render(SDL_Surface *src, SDL_Surface *dest, Font &font)
 {
@@ -26,8 +35,12 @@ void TitleScreen::Render(SDL_Surface *src, SDL_Surface *dest, Font &font)
 		{
 			if ((i >= 0) && (i < (int)levelnames.size()))
 			{
-				if (flash || (i != selection))
-					font.PrintMessage(levelnames[i], 100 + (i - selection) * 10, dest, 1);
+				const std::string label = Ellipsize(levelnames[i], 38);
+				if (flash || (i != selection)) {
+					font.PrintMessage(label, 100 + (i - selection) * 10, dest, 1);
+				} else {
+					font.PrintMessage(label, 100 + (i - selection) * 10, dest, 2);
+				}
 			}
 		}
 	}

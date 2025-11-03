@@ -2,6 +2,11 @@
 #include "objectgraphics.h"
 #include "soundhandler.h"
 #include "vita/RendererHooks.h"
+#include "ConfigOverlays.h"
+#include <cstring>
+#include <cstdio>
+#include <cstdlib>
+#include <string>
 
 #include <psp2/ctrl.h>
 #include <string>
@@ -13,8 +18,20 @@
 
 namespace Config
 {
+	// Forward declarations for helpers added later
+	static void LoadNormalizedKeys();
+	static void NormalizeConfigFileToNewStyle();
+
+
+
+// --- Normalized config helpers (write unified KEY=VALUE, read both old/new) ---
+
+
+
+
+
 	static bool zombiemassacremode = false;
-	static int maxfps = 50; // 50 or 30
+	static int maxfps = 30; // 50 or 30
 
 	// set parameter string for launcher selection
 	static std::string selectedGame = "";
@@ -40,9 +57,9 @@ namespace Config
 	static int bloodsize;
 	static bool debug = false;
 	static uint32_t FPS;
-	static bool multithread = false;
-	static bool vsync = false;
-	static bool fullscreen = false;
+	static bool multithread = true;
+	static bool vsync = true;
+	static bool fullscreen = true;
 	static bool switchsticks = false;
 
 	static unsigned char rightStickDeadzone = 20;
@@ -336,7 +353,7 @@ namespace Config
 			soundfilenames[SoundHandler::SOUND_DRAGON] = selectedGame + "/sfxs/dragon.bin";
 		}
 
-		configkeys[KEY_SHOOT] = SCE_CTRL_CROSS;
+		configkeys[KEY_SHOOT] = SCE_CTRL_RTRIGGER;
 		configkeys[KEY_UP] = SCE_CTRL_UP;
 		configkeys[KEY_DOWN] = SCE_CTRL_DOWN;
 		configkeys[KEY_LEFT] = static_cast<SceCtrlButtons>(SCE_CTRL_LTRIGGER | SCE_CTRL_TRIANGLE);
@@ -352,19 +369,19 @@ namespace Config
 
 		focallength = 128;
 
-		mousesens = 5;
+		mousesens = 2;
 		bloodsize = 2;
 
 		multithread = true;
 		debug = false;
-		vsync = false;
+		vsync = true;
 		fullscreen = true;
 		switchsticks = false;
 
 		musvol = 5;
 		sfxvol = 5;
 
-		autofire = true;
+		autofire = false;
 
 		godmode = false; // cheatmode
 		unlimitedlives = false; // cheatmode
@@ -468,7 +485,8 @@ if (command == "godmode")
 					}
 					if (command == "maxweapon")
 					{
-						maxweapon = std::stoi(line) != 0;
+						// Intentionally ignored: do not load persisted maxweapon
+						/* noop */;
 					}
 // ---
 
@@ -485,7 +503,14 @@ if (command == "godmode")
 
 			file.close();
 		}
-	}
+	
+    // Load overlay/effects settings from config.txt
+    EffectsConfigInit();
+
+    LoadNormalizedKeys();
+}
+
+
 
 	int GetKey(keyenum k)
 	{
@@ -698,7 +723,7 @@ file << "\n;Rapidfire?\n";
 			file << "\n;Cheatmode?\n";
 			file << "godmode " << (godmode ? 1 : 0) << "\n";
 			file << "unlimitedlives " << (unlimitedlives ? 1 : 0) << "\n";
-			file << "maxweapon " << (maxweapon ? 1 : 0) << "\n";
+// NOTE: not persisting maxweapon (removed)
 			// ---
 
 			file << "\n;RightStickDeadzone\n";
@@ -706,9 +731,24 @@ file << "\n;Rapidfire?\n";
 			file << "\n;LeftStickDeadzone\n";
 			file << "leftStickDeadzone " << leftStickDeadzone << "\n";
 
+
+			// --- Effects (unified): uppercase KEY=val ---
+			file << "\n;Display Effects (unified)\n";
+			file << "VIGNETTE=" << Config::GetVignetteEnabled() << "\n";
+			file << "V_STRENGTH=" << Config::GetVignetteStrength() << "\n";
+			file << "V_RADIUS=" << Config::GetVignetteRadius() << "\n";
+			file << "V_SOFTNESS=" << Config::GetVignetteSoftness() << "\n";
+			file << "V_WARMTH=" << Config::GetVignetteWarmth() << "\n";
+			file << "GRAIN=" << Config::GetFilmGrain() << "\n";
+			file << "GRAIN_I=" << Config::GetFilmGrainIntensity() << "\n";
+			file << "SCAN=" << Config::GetScanlines() << "\n";
+			file << "SCAN_I=" << Config::GetScanlineIntensity() << "\n";
 			file.close();
 		}
-	}
+	
+    NormalizeConfigFileToNewStyle();
+}
+
 
 	void GetRenderSizes(int &rw, int &rh, int &ww, int &wh)
 	{
@@ -722,4 +762,208 @@ file << "\n;Rapidfire?\n";
 	{
 		return focallength;
 	}
+
+
+static void LoadNormalizedKeys()
+{
+    const char* path = "ux0:/data/ZGloom/config.txt";
+    std::FILE* f = std::fopen(path, "r");
+    if (!f) return;
+    char buf[512];
+    while (std::fgets(buf, sizeof(buf), f)) {
+        char* s = buf;
+        while (*s==' ' || *s=='\t') ++s;
+        if (*s==';' || *s=='\0') continue;
+        char* eq = strchr(s, '=');
+        if (!eq) continue;
+        *eq = '\0';
+        char* key = s;
+        char* val = eq + 1;
+        char* kt = key + strlen(key);
+        while (kt>key && (kt[-1]==' ' || kt[-1]=='\t')) *--kt = '\0';
+        while (*val==' ' || *val=='\t') ++val;
+        int n = (int)strlen(val);
+        while (n>0 && (val[n-1]=='\n' || val[n-1]=='\r')) val[--n] = '\0';
+
+        auto ieq = [](const char* a, const char* b)->bool{
+            while (*a && *b) {
+                char ca = (*a>='a'&&*a<='z') ? *a-32 : *a;
+                char cb = (*b>='a'&&*b<='z') ? *b-32 : *b;
+                if (ca!=cb) return false;
+                ++a; ++b;
+            }
+            return *a==0 && *b==0;
+        };
+
+        auto parse_int = [](const char* v)->int{ return std::atoi(v); };
+        auto parse_wh  = [](const char* v, int& w, int& h)->bool{
+            const char* x = strchr(v, 'x');
+            if (!x) x = strchr(v, 'X');
+            if (!x) return false;
+            std::string ws(v, x-v);
+            int iw = std::atoi(ws.c_str());
+            int ih = std::atoi(x+1);
+            if (iw<=0 || ih<=0) return false;
+            w = iw; h = ih; return true;
+        };
+
+        if (ieq(key, "RENDERSIZE")) {
+            int w=0,h=0; if (parse_wh(val,w,h)) { renderwidth = w; renderheight = h; }
+        } else if (ieq(key, "WINDOWSIZE")) {
+            int w=0,h=0; if (parse_wh(val,w,h)) { windowwidth = w; windowheight = h; }
+        } else if (ieq(key, "VSYNC")) {
+            vsync = parse_int(val)!=0;
+        } else if (ieq(key, "FULLSCREEN")) {
+            fullscreen = parse_int(val)!=0;
+        } else if (ieq(key, "FOCAL_LENGTH")) {
+            focallength = parse_int(val);
+        } else if (ieq(key, "SENSITIVITY")) {
+            SetMouseSens(parse_int(val));
+        } else if (ieq(key, "BLOODSIZE")) {
+            bloodsize = parse_int(val);
+        } else if (ieq(key, "SFX")) {
+            sfxvol = parse_int(val);
+        } else if (ieq(key, "MUSIC")) {
+            musvol = parse_int(val);
+        } else if (ieq(key, "MULTITHREAD")) {
+            multithread = parse_int(val)!=0;
+        } else if (ieq(key, "MAXFPS")) {
+            maxfps = parse_int(val);
+        } else if (ieq(key, "RAPIDFIRE")) {
+            autofire = parse_int(val)!=0;
+        } else if (ieq(key, "GODMODE")) {
+            godmode = parse_int(val)!=0;
+        } else if (ieq(key, "UNLIMITED_LIVES")) {
+            unlimitedlives = parse_int(val)!=0;
+        } else if (ieq(key, "RS_DEADZONE") || ieq(key, "RIGHTSTICKDEADZONE")) {
+            if (*val>='0' && *val<='9') rightStickDeadzone = (char)parse_int(val);
+            else if (*val) rightStickDeadzone = *val;
+        } else if (ieq(key, "LS_DEADZONE") || ieq(key, "LEFTSTICKDEADZONE")) {
+            if (*val>='0' && *val<='9') leftStickDeadzone = (char)parse_int(val);
+            else if (*val) leftStickDeadzone = *val;
+        } else if (ieq(key, "GRAIN_INTENSITY")) {
+            SetFilmGrainIntensity(parse_int(val));
+        } else if (ieq(key, "SCAN_INTENSITY")) {
+            SetScanlineIntensity(parse_int(val));
+        } else if (ieq(key, "GRAIN")) {
+            SetFilmGrain(parse_int(val)!=0);
+        } else if (ieq(key, "SCAN")) {
+            SetScanlines(parse_int(val)!=0);
+        } else if (ieq(key, "VIGNETTE")) {
+            SetVignetteEnabled(parse_int(val)!=0);
+        } else if (ieq(key, "V_STRENGTH")) {
+            SetVignetteStrength(parse_int(val));
+        } else if (ieq(key, "V_RADIUS")) {
+            SetVignetteRadius(parse_int(val));
+        } else if (ieq(key, "V_SOFTNESS")) {
+            SetVignetteSoftness(parse_int(val));
+        } else if (ieq(key, "V_WARMTH")) {
+            SetVignetteWarmth(parse_int(val));
+        }
+    }
+    std::fclose(f);
+}
+
+static void NormalizeConfigFileToNewStyle()
+{
+    const char* path = "ux0:/data/ZGloom/config.txt";
+    std::FILE* f = std::fopen(path, "r");
+    if (!f) return;
+    int rw=renderwidth, rh=renderheight;
+    int ww=windowwidth, wh=windowheight;
+    int vs = vsync?1:0, fs = fullscreen?1:0;
+    int fl = focallength;
+    int sens = GetMouseSens();
+    int bsz = bloodsize;
+    int sfx = sfxvol, mus = musvol;
+    int mt = multithread?1:0;
+    int mxfps = maxfps;
+    int af = autofire?1:0;
+    int gm = godmode?1:0, ul = unlimitedlives?1:0;
+    unsigned char rs = rightStickDeadzone;
+    unsigned char ls = leftStickDeadzone;
+
+    char keys_line[256] = {0};
+    {
+        char buf[512];
+        std::rewind(f);
+        while (std::fgets(buf, sizeof(buf), f)) {
+            if (strncmp(buf, "keys ", 5)==0 || strncmp(buf, "keys\t", 5)==0 || strncmp(buf, "KEYS ", 5)==0 || strncmp(buf, "KEYS\t", 5)==0) {
+                strncpy(keys_line, buf, sizeof(keys_line)-1);
+                break;
+            }
+        }
+    }
+    std::fclose(f);
+
+    std::FILE* out = std::fopen(path, "w");
+    if (!out) return;
+    std::fputs(";ZGloom Config\n\n", out);
+    if (keys_line[0]) {
+        std::fputs(";SDL keyvals, up/down/left/right/strafeleft/straferight/strafemod/shoot\n", out);
+        std::fputs(keys_line, out);
+        if (keys_line[strlen(keys_line)-1] != '\n') std::fputc('\n', out);
+        std::fputc('\n', out);
+    }
+    std::fputs(";The size of the game render bitmap.\n", out);
+    std::fputs(";Bumping this up may lead to more overflow issues in the renderer.\n", out);
+    std::fputs(";But you can get, say, 16:9 by using 460x256 or something in a larger window.\n", out);
+    std::fprintf(out, "RENDERSIZE=%dx%d\n\n", rw, rh);
+
+    std::fputs(";The size of the actual window/fullscreen res.\n", out);
+    std::fputs(";Guess this should be a multiple of the above for pixel perfect.\n", out);
+    std::fprintf(out, "WINDOWSIZE=%dx%d\n\n", ww, wh);
+
+    std::fputs(";VSync on or off?\n", out);
+    std::fprintf(out, "VSYNC=%d\n\n", vs);
+
+    std::fputs(";Fullscreen on or off?\n", out);
+    std::fprintf(out, "FULLSCREEN=%d\n\n", fs);
+
+    std::fputs(";Focal length. Original used 128 for a 320x256 display.\n", out);
+    std::fputs(";Bump this up for higher resolution. Rule of thumb: for 90degree fov, = renderwidth/2\n", out);
+    std::fprintf(out, "FOCAL_LENGTH=%d\n\n", fl);
+
+    std::fputs(";Mouse sensitivity\n", out);
+    std::fprintf(out, "SENSITIVITY=%d\n\n", sens);
+
+    std::fputs(";Size of blood splatters in pixels\n", out);
+    std::fprintf(out, "BLOODSIZE=%d\n\n", bsz);
+
+    std::fputs(";Audio volumes\n", out);
+    std::fprintf(out, "SFX=%d\n", sfx);
+    std::fprintf(out, "MUSIC=%d\n\n", mus);
+
+    std::fputs(";Multithreaded renderer (somewhat experimental)\n", out);
+    std::fputs(";Has to be enabled for PS Vita.\n", out);
+    std::fprintf(out, "MULTITHREAD=%d\n\n", mt);
+
+    std::fputs(";Max FPS cap (30 or 50)\n", out);
+    std::fprintf(out, "MAXFPS=%d\n\n", mxfps);
+
+    std::fputs(";Rapidfire?\n", out);
+    std::fprintf(out, "RAPIDFIRE=%d\n\n", af);
+
+    std::fputs(";Cheatmodes\n", out);
+    std::fprintf(out, "GODMODE=%d\n", gm);
+    std::fprintf(out, "UNLIMITED_LIVES=%d\n\n", ul);
+
+    std::fputs(";Controls\n", out);
+    std::fprintf(out, "RS_DEADZONE=%d\n", (int)rs);
+    std::fprintf(out, "LS_DEADZONE=%d\n\n", (int)ls);
+
+
+    std::fputs(";Display Effects\n", out);
+    std::fprintf(out, "VIGNETTE=%d\n", GetVignetteEnabled());
+    std::fprintf(out, "V_STRENGTH=%d\n", GetVignetteStrength());
+    std::fprintf(out, "V_RADIUS=%d\n", GetVignetteRadius());
+    std::fprintf(out, "V_SOFTNESS=%d\n", GetVignetteSoftness());
+    std::fprintf(out, "V_WARMTH=%d\n", GetVignetteWarmth());
+    std::fprintf(out, "GRAIN=%d\n", GetFilmGrain());
+    std::fprintf(out, "GRAIN_INTENSITY=%d\n", GetFilmGrainIntensity());
+    std::fprintf(out, "SCAN=%d\n", GetScanlines());
+    std::fprintf(out, "SCAN_INTENSITY=%d\n", GetScanlineIntensity());
+    std::fclose(out);
+}
+
 }

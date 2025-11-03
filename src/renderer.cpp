@@ -4,6 +4,60 @@
 #include "gloommaths.h"
 #include "objectgraphics.h"
 #include "config.h"
+#include "vita/RendererHooks.h"
+
+// ---- Fast Smooth-Lighting LUT (8-bit fixed point) ---------------------------
+#include <math.h>
+static const int Z_MAX = 4096;
+static uint8_t gLightLUT[Z_MAX+1];
+static uint8_t gLightLUTFade[Z_MAX+1];
+static bool gLightLUTInit = false;
+static inline float SL_Curve(float z){
+    const float k = 380.0f; const float gamma = 1.25f;
+    float base = 1.0f / (1.0f + z / k);
+    if (base < 0.f) base = 0.f;
+    return powf(base, gamma);
+}
+static void SL_EnsureLUT(){
+    if (gLightLUTInit) return;
+    for (int z=0; z<=Z_MAX; ++z){
+        float f  = SL_Curve((float)z);
+        float ff = f * 0.85f;
+        int fi  = (int)(f  * 255.0f + 0.5f);
+        int ffi = (int)(ff * 255.0f + 0.5f);
+        if (fi  < 0) fi  = 0; if (fi  > 255) fi  = 255;
+        if (ffi < 0) ffi = 0; if (ffi > 255) ffi = 255;
+        gLightLUT[z]     = (uint8_t)fi;
+        gLightLUTFade[z] = (uint8_t)ffi;
+    }
+    gLightLUTInit = true;
+}
+static inline uint8_t SL_Factor(int z){
+    if (!gLightLUTInit) SL_EnsureLUT();
+    if (z < 0) z = 0; else if (z > Z_MAX) z = Z_MAX;
+    return gLightLUT[z];
+}
+static inline uint8_t SL_FactorFade(int z){
+    if (!gLightLUTInit) SL_EnsureLUT();
+    if (z < 0) z = 0; else if (z > Z_MAX) z = Z_MAX;
+    return gLightLUTFade[z];
+}
+static inline void ColourModifySmooth(uint8_t r, uint8_t g, uint8_t b, uint32_t& out, int z){
+    uint8_t f = SL_Factor(z);
+    uint32_t R = (uint32_t(r) * f) >> 8;
+    uint32_t G = (uint32_t(g) * f) >> 8;
+    uint32_t B = (uint32_t(b) * f) >> 8;
+    out = 0xFF000000u | (R<<16) | (G<<8) | B;
+}
+static inline void ColourModifySmoothFade(uint8_t r, uint8_t g, uint8_t b, uint32_t& out, int z){
+    uint8_t f = SL_FactorFade(z);
+    uint32_t R = (uint32_t(r) * f) >> 8;
+    uint32_t G = (uint32_t(g) * f) >> 8;
+    uint32_t B = (uint32_t(b) * f) >> 8;
+    out = 0xFF000000u | (R<<16) | (G<<8) | B;
+}
+
+
 
 const uint32_t Renderer::darkpalettes[16][16] =
 { { 0x00000000, 0x00000011, 0x00000022, 0x00000033, 0x00000044, 0x00000055, 0x00000066, 0x00000077, 0x00000088, 0x00000099, 0x000000aa, 0x000000bb, 0x000000cc, 0x000000dd, 0x000000ee, 0x000000ff },
@@ -275,11 +329,11 @@ void Renderer::DrawCeil(Camera* camera)
 
 				if (fadetimer)
 				{
-					ColourModifyFade(r, g, b, dimcol, pal);
+					ColourModifySmoothFade(r,g,b,dimcol,z);
 				}
 				else
 				{
-					ColourModify(r, g, b, dimcol, pal);
+					ColourModifySmooth(r,g,b,dimcol,z);
 				}
 
 				((uint32_t*)(rendersurface->pixels))[x + y*renderwidth] = dimcol;
@@ -357,11 +411,11 @@ void Renderer::DrawFloor(Camera* camera)
 				uint32_t dimcol;
 				if (fadetimer)
 				{
-					ColourModifyFade(r, g, b, dimcol, pal);
+					ColourModifySmoothFade(r,g,b,dimcol,z);
 				}
 				else
 				{
-					ColourModify(r, g, b, dimcol, pal);
+					ColourModifySmooth(r,g,b,dimcol,z);
 				}
 
 				((uint32_t*)(rendersurface->pixels))[x + y*renderwidth] = dimcol;
@@ -430,11 +484,11 @@ void Renderer::DrawColumn(int32_t x, int32_t ystart, int32_t h, Column* textured
 				uint32_t dimcol;
 				if (fadetimer)
 				{
-					ColourModifyFade(r, g, b, dimcol, pal);
+					ColourModifySmoothFade(r,g,b,dimcol,z);
 				}
 				else
 				{
-					ColourModify(r, g, b, dimcol, pal);
+					ColourModifySmooth(r,g,b,dimcol,z);
 				}
 				surface[x + y*renderwidth] = dimcol;
 			}
@@ -512,7 +566,7 @@ void Renderer::DrawBlood(Camera* camera)
 					{
 						if ((dy>0) && (dy < renderheight))
 						{
-							surface[dx + dy*renderwidth] = mask;
+							if (iz <= zbuff[dx]) surface[dx + dy*renderwidth] = mask;
 						}
 					}
 				}
@@ -523,6 +577,29 @@ void Renderer::DrawBlood(Camera* camera)
 
 void Renderer::DrawObjects(Camera* camera)
 {
+    // --- Dust parallax: feed camera motion (screen-space deltas) ---
+    static int prev_cam_x = 0, prev_cam_z = 0, prev_cam_rot = 0;
+    int cam_x = camera->x.GetInt();
+    int cam_z = camera->z.GetInt();
+    int cam_rot = camera->rotquick.GetInt() & 0xFF;
+
+    int dx = cam_x - prev_cam_x;
+    int dz = cam_z - prev_cam_z;
+    int drot = cam_rot - prev_cam_rot;
+
+    prev_cam_x = cam_x;
+    prev_cam_z = cam_z;
+    prev_cam_rot = cam_rot;
+
+    // Approximate mapping to screen-space drift (tweakable)
+    float screen_dx = dx * 0.08f;
+    float screen_dy = dz * 0.08f;
+    float yaw_rate = (float)((drot & 0xFF)) * (6.28318530718f / 256.0f);
+
+    RendererHooks::setCameraMotion(screen_dx, screen_dy, yaw_rate);
+
+	RendererHooks::markWorldFrame();
+
 	Quick x, z, temp;
 	Quick cammatrix[4];
 	int32_t ix, iz, iy;

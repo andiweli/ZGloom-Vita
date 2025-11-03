@@ -4,7 +4,6 @@
 #include "hud.h"
 #include "config.h"
 #include <cstring>
-#include "weaponfix.h"
 #include <psp2/kernel/clib.h> 
 
 void GameLogic::Init(ObjectGraphics *ograph)
@@ -187,10 +186,7 @@ void GameLogic::MoveBlood()
 			temp.SetVal(0x8000);
 			b.yvec = b.yvec + temp;
 
-			if (b.y.GetInt() >= 0)
-			{
-				b.killme = true;
-			}
+			if (b.y.GetInt() >= 0) { b.killme = true; }
 		}
 		else
 		{

@@ -1,6 +1,6 @@
 #pragma once
 // ConfigOverlays: stores display-effect options (with persistence).
-// Persistence file: ux0:/data/ZGloom/config_effects.txt
+// Persistence file: ux0:/data/ZGloom/config.txt
 namespace Config {
     int  GetVignetteEnabled(); void SetVignetteEnabled(int);
     int  GetVignetteStrength();   void SetVignetteStrength(int);   // 0..4

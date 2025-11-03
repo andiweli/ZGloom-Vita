@@ -3,6 +3,17 @@
 #include "config.h"
 #include "ConfigOverlays.h"
 #include "MenuAdapters.h"
+#include "vita/RendererHooks.h"
+// ---- Vignette Warmth Bool Mapping (ON=WARM, OFF=COLD) ----------------------
+static int MenuGetVignetteWarmthBool() {
+    int v = MenuAdapters::GetWarmth01();
+    return (v >= 6) ? 1 : 0; // ON -> COLD (1), OFF -> WARM (0)
+}
+static void MenuSetVignetteWarmthBool(int on) {
+    if (on) { MenuAdapters::SetWarmth01(8); } else { MenuAdapters::SetWarmth01(3); }
+}
+
+
 
 void MenuScreen::Render(SDL_Surface *src, SDL_Surface *dest, Font &font)
 {
@@ -29,12 +40,12 @@ void MenuScreen::Render(SDL_Surface *src, SDL_Surface *dest, Font &font)
 	{
 		DisplayStandardMenu(displaymenu, flash, scale, dest, font);
 	}
-// cheatmode	
+// Cheatmode	
 	else if (status == MENUSTATUS_CHEATOPTIONS)
 	{
 		DisplayStandardMenu(cheatmenu, flash, scale, dest, font);
 	}
-// ---	
+
 //	else if (status == MENUSTATUS_KEYCONFIG)
 //	{
 //		switch (selection)
@@ -94,28 +105,28 @@ MenuScreen::MenuScreen()
 
 //	displaymenu.push_back(MenuEntry("MULTITHREAD RENDERER: ", ACTION_BOOL, 0, Config::GetMT, Config::SetMT));
 //	displaymenu.push_back(MenuEntry("FULLSCREEN: ", ACTION_BOOL, 0, Config::GetFullscreen, Config::SetFullscreen));
-	displaymenu.push_back(MenuEntry("BLOOD INTENSITY: ", ACTION_INT, 5, Config::GetBlood, Config::SetBlood));
+	displaymenu.push_back(MenuEntry("     BLOOD INTENSITY: ", ACTION_INT, 6, Config::GetBlood, Config::SetBlood));
 	//HALBEZEILE//
-	displaymenu.push_back(MenuEntry("MAX FPS 50: ", ACTION_BOOL, 0, Config::GetMaxFpsBool, Config::SetMaxFpsBool));
+	displaymenu.push_back(MenuEntry("         MAX. FPS 50: ", ACTION_BOOL, 0, Config::GetMaxFpsBool, Config::SetMaxFpsBool));
 	//HALBEZEILE//
 	displaymenu.push_back(MenuEntry("ATMOSPHERIC VIGNETTE: ", ACTION_BOOL, 0, Config::GetVignetteEnabled, Config::SetVignetteEnabled));
-	displaymenu.push_back(MenuEntry("VIGNETTE STRENGTH: ", ACTION_INT, 5, Config::GetVignetteStrength, Config::SetVignetteStrength));
-	displaymenu.push_back(MenuEntry("VIGNETTE RADIUS: ", ACTION_INT, 5, Config::GetVignetteRadius, Config::SetVignetteRadius));
-	displaymenu.push_back(MenuEntry("VIGNETTE SOFTNESS: ", ACTION_INT, 5, Config::GetVignetteSoftness, Config::SetVignetteSoftness));
-	displaymenu.push_back(MenuEntry("VIGNETTE WARMTH: ", ACTION_INT, 5, Config::GetVignetteWarmth, Config::SetVignetteWarmth));
+	displaymenu.push_back(MenuEntry("   VIGNETTE STRENGTH: ", ACTION_INT, 6, Config::GetVignetteStrength, Config::SetVignetteStrength));
+	displaymenu.push_back(MenuEntry("     VIGNETTE RADIUS: ", ACTION_INT, 6, Config::GetVignetteRadius, Config::SetVignetteRadius));
+	displaymenu.push_back(MenuEntry("   VIGNETTE SOFTNESS: ", ACTION_INT, 6, Config::GetVignetteSoftness, Config::SetVignetteSoftness));
+	displaymenu.push_back(MenuEntry("     VIGNETTE WARMTH: ", ACTION_BOOL, 0, MenuGetVignetteWarmthBool, MenuSetVignetteWarmthBool));
 	//HALBEZEILE//
-	displaymenu.push_back(MenuEntry("FILM GRAIN: ", ACTION_BOOL, 0, Config::GetFilmGrain, Config::SetFilmGrain));
-	displaymenu.push_back(MenuEntry("FILM GRAIN INTENSITY: ", ACTION_INT, 5, Config::GetFilmGrainIntensity, Config::SetFilmGrainIntensity));
+	displaymenu.push_back(MenuEntry("          FILM GRAIN: ", ACTION_BOOL, 0, Config::GetFilmGrain, Config::SetFilmGrain));
+	displaymenu.push_back(MenuEntry("FILM GRAIN INTENSITY: ", ACTION_INT, 6, Config::GetFilmGrainIntensity, Config::SetFilmGrainIntensity));
 	//HALBEZEILE//
-	displaymenu.push_back(MenuEntry("SCANLINES: ", ACTION_BOOL, 0, Config::GetScanlines, Config::SetScanlines));
-	displaymenu.push_back(MenuEntry("SCANLINE INTENSITY: ", ACTION_INT, 5, Config::GetScanlineIntensity, Config::SetScanlineIntensity));
+	displaymenu.push_back(MenuEntry("           SCANLINES: ", ACTION_BOOL, 0, Config::GetScanlines, Config::SetScanlines));
+	displaymenu.push_back(MenuEntry("  SCANLINE INTENSITY: ", ACTION_INT, 6, Config::GetScanlineIntensity, Config::SetScanlineIntensity));
 
 
 // cheatmode	
 	cheatmenu.push_back(MenuEntry("RETURN", ACTION_SWITCHMENU, MENUSTATUS_MAIN, nullptr, nullptr));
-	cheatmenu.push_back(MenuEntry("INFINITE HEALTH AT START: ", ACTION_BOOL, 0, Config::GetGM, Config::SetGM));
+	cheatmenu.push_back(MenuEntry("PERMANENT INFINITE HEALTH: ", ACTION_BOOL, 0, Config::GetGM, Config::SetGM));
 //	cheatmenu.push_back(MenuEntry("MAX LIVES ARE 99: ", ACTION_BOOL, 0, Config::GetUL, Config::SetUL));
-	cheatmenu.push_back(MenuEntry("PHOTON WEAPON AT START: ", ACTION_BOOL, 0, Config::GetMW, Config::SetMW));
+	cheatmenu.push_back(MenuEntry("PHOTON WEAPON AT NEXT LEVEL: ", ACTION_BOOL, 0, Config::GetMW, Config::SetMW));
 // ---
 
 }
@@ -283,7 +294,7 @@ MenuScreen::MenuReturn MenuScreen::Update()
 
 void MenuScreen::DisplayStandardMenu(std::vector<MenuEntry> &menu, bool flash, int scale, SDL_Surface *dest, Font &font)
 {
-	int starty = 100 * scale;
+	int starty = 68 * scale;
 	int yinc = 10 * scale;
 
 	for (size_t i = 0; i < menu.size(); i++)
@@ -300,20 +311,31 @@ void MenuScreen::DisplayStandardMenu(std::vector<MenuEntry> &menu, bool flash, i
 			starty += (yinc / 2);
 		}
 if (menu[i].action == ACTION_INT)
-		{
-			if (flash || (selection != i))
-			{
+{
+    if (flash || (selection != i))
+    {
+        std::string menustring = menu[i].name;
+        int v = menu[i].getval();
+        if (menu[i].arg == 1)
+        {
+            menustring += (v ? "ON" : "OFF");
+        }
+        else
+        {
+            menustring += std::to_string(v);
+        }
+        font.PrintMessage(menustring, starty, dest, scale);
+    }
+}
+
+		else if (menu[i].action == ACTION_BOOL) {
+			if (flash || (selection != i)) {
 				std::string menustring = menu[i].name;
-				menustring += std::to_string(menu[i].getval());
-				font.PrintMessage(menustring, starty, dest, scale);
-			}
-		}
-		else if (menu[i].action == ACTION_BOOL)
-		{
-			if (flash || (selection != i))
-			{
-				std::string menustring = menu[i].name;
-				menustring += menu[i].getval() ? "ON" : "OFF";
+				if (menustring.rfind("VIGNETTE WARMTH", 0) == 0) {
+					menustring += (menu[i].getval() ? "COLD" : "WARM"); // ON=COLD, OFF=WARM
+				} else {
+					menustring += (menu[i].getval() ? "ON" : "OFF");
+				}
 				font.PrintMessage(menustring, starty, dest, scale);
 			}
 		}
