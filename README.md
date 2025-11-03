@@ -23,7 +23,7 @@ Now with integrated launcher for all Gloom-Engine games available and integrated
     6. All options are saved now
     7. Fixed a bug where, when moving sideways, the muzzle flash didn't come from the weapon but from the side.
   - 29.10.2025:
-    1. Optimized renderer
+    1. Optimized renderer for approx. 4% smaller .VPK
     2. Performance boost with up to 60 FPS
 
 ## What is Gloom?
@@ -77,8 +77,8 @@ I am using Ubuntu on Windows with VitaSDK.
     ```
 
 # TODO
-- Update or change renderer (perhaps vita2d?)
-- check for shaders or mipmapping
+- Update or change renderer (perhaps libvita2d)
+- Check for shaders or mipmapping
 - Save/Load for savestates
 # License
 
