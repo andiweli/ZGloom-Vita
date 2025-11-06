@@ -1,5 +1,5 @@
 Changelog
-ZGloom-Vita
+ZGloom-Vita SDL
 
 2.2
 Performance Boost - Frames now are around 45-60 FPS instead the previous 15-20 FPS.
